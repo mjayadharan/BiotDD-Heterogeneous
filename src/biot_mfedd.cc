@@ -61,7 +61,8 @@ namespace dd_biot
                                                  const BiotParameters &bprm,
                                                  const unsigned int mortar_flag,
                                                  const unsigned int mortar_degree,
-												 unsigned int split_flag)
+												 unsigned int split_flag,
+												 unsigned int ic_constr_flag)
             :
             mpi_communicator (MPI_COMM_WORLD),
             P_coarse2fine (false),
@@ -77,6 +78,7 @@ namespace dd_biot
 			max_cg_iteration_darcy(0),
             qdegree(11),
 			split_flag(split_flag),
+			ic_constr_flag(ic_constr_flag),
             fe (FE_BDM<dim>(degree), dim,
                 FE_DGQ<dim>(degree-1), dim,
                 FE_DGQ<dim>(degree-1), 0.5*dim*(dim-1),
@@ -90,10 +92,10 @@ namespace dd_biot
             dof_handler (triangulation),
 			dof_handler_elast(triangulation),
 			dof_handler_darcy(triangulation),
-            fe_mortar (FE_RaviartThomas<dim>(mortar_degree), dim,
+            fe_mortar (FE_BDM<dim>(mortar_degree), dim,
                        FE_Nothing<dim>(), dim,
                        FE_Nothing<dim>(), 0.5*dim*(dim-1),
-                       FE_RaviartThomas<dim>(mortar_degree), 1,
+                       FE_BDM<dim>(mortar_degree), 1,
                        FE_Nothing<dim>(), 1),
             dof_handler_mortar (triangulation_mortar),
 			lame_function(ds),
@@ -437,6 +439,50 @@ namespace dd_biot
 			system_rhs_star.collect_sizes ();
 			system_rhs_star = 0;
         }
+		//adding vectors required for storing mortar solutions.
+		if (mortar_flag)
+		        {
+		            std::vector<types::global_dof_index> dofs_per_component_mortar (dim*dim + dim + 0.5*dim*(dim-1) + dim + 1);
+		            DoFTools::count_dofs_per_component (dof_handler_mortar, dofs_per_component_mortar);
+		            unsigned int n_s_mortar=0, n_u_mortar=0, n_g_mortar=0, n_z_mortar=0, n_p_mortar=0;
+
+		            for (unsigned int i=0; i<dim; ++i)
+		            {
+		                n_s_mortar += dofs_per_component_mortar[i*dim];
+		                n_u_mortar += dofs_per_component_mortar[dim*dim + i];
+
+		                // Rotation is scalar in 2d and vector in 3d, so this:
+		                if (dim == 2)
+		                    n_g_mortar = dofs_per_component_mortar[dim*dim + dim];
+		                else if (dim == 3)
+		                    n_g_mortar += dofs_per_component_mortar[dim*dim + dim + i];
+		            }
+
+		            n_z_mortar = dofs_per_component_mortar[dim*dim + dim + 0.5*dim*(dim-1)];
+		            n_p_mortar = dofs_per_component_mortar[dim*dim + dim + 0.5*dim*(dim-1) + dim];
+
+		            n_stress_mortar = n_s_mortar;
+		            n_disp_mortar = n_u_mortar;
+		            n_rot_mortar = n_g_mortar;
+		            n_flux_mortar = n_z_mortar;
+		            n_pressure_mortar = n_p_mortar;
+
+		            solution_bar_mortar.reinit(5);
+		            solution_bar_mortar.block(0).reinit (n_s_mortar);
+		            solution_bar_mortar.block(1).reinit (n_u_mortar);
+		            solution_bar_mortar.block(2).reinit (n_g_mortar);
+		            solution_bar_mortar.block(3).reinit (n_z_mortar);
+		            solution_bar_mortar.block(4).reinit (n_p_mortar);
+		            solution_bar_mortar.collect_sizes ();
+
+		            solution_star_mortar.reinit(5);
+		            solution_star_mortar.block(0).reinit (n_s_mortar);
+		            solution_star_mortar.block(1).reinit (n_u_mortar);
+		            solution_star_mortar.block(2).reinit (n_g_mortar);
+		            solution_star_mortar.block(3).reinit (n_z_mortar);
+		            solution_star_mortar.block(4).reinit (n_p_mortar);
+		            solution_star_mortar.collect_sizes ();
+		        }
 
         { //Elasticity part
                 		{ //adding Neumann Boundary conditions.
@@ -669,6 +715,12 @@ namespace dd_biot
         solution = 0;
         old_solution.reinit(solution);
         intermediate_solution.reinit(solution);
+        interface_fe_function.reinit(solution);
+        if(mortar_flag)
+		{
+			interface_fe_function_old.reinit(solution);
+			interface_fe_function_mortar.reinit(solution_bar_mortar);
+		}
         if(split_flag!=0){
 //        	intermediate_solution.reinit(solution);
         	if(split_flag==2){
@@ -1198,21 +1250,35 @@ namespace dd_biot
                 {
                     cell->face(face_n)->get_dof_indices (local_face_dof_indices, 0);
 
-                    for (auto el : local_face_dof_indices){
-                        if (el < n_stress){
-                            interface_dofs[cell->face(face_n)->boundary_id()-1].push_back(el);
-//                            local_counter++;
-                        }
-                        else if(el>=n_stress+n_disp+n_rot && el<n_stress+n_disp+n_rot+n_flux){
-                        	interface_dofs[cell->face(face_n)->boundary_id()-1].push_back(el);
-//                        	local_counter++;
-                        }
-
+                    for (auto el : local_face_dof_indices)
+                    {
+                    	if(mortar_flag)
+						{
+							if (el < n_stress_mortar)
+							{
+								interface_dofs[cell->face(face_n)->boundary_id()-1].push_back(el);
+							}
+							else if(el>=n_stress_mortar+n_disp_mortar+n_rot_mortar && el<n_stress_mortar+n_disp_mortar+n_rot_mortar+n_flux_mortar)
+							{
+								interface_dofs[cell->face(face_n)->boundary_id()-1].push_back(el);
+							}
+						}
+						else
+						{
+							if (el < n_stress)
+							{
+								interface_dofs[cell->face(face_n)->boundary_id()-1].push_back(el);
+							}
+							else if(el>=n_stress+n_disp+n_rot && el<n_stress+n_disp+n_rot+n_flux)
+							{
+								interface_dofs[cell->face(face_n)->boundary_id()-1].push_back(el);
+							}
+						}
                     }
-                }
-        }
-//        pcout<<"\n size of interface dofs: "<<local_counter<<"\n";
-    }
+				}
+
+		}
+     }
 
     // MixedBiotProblemDD - initialize the interface data structure for elasticity part(split scheme)
     template <int dim>
@@ -1247,13 +1313,18 @@ namespace dd_biot
                 {
                     cell->face(face_n)->get_dof_indices (local_face_dof_indices, 0);
 
-                    for (auto el : local_face_dof_indices){
-                        if (el < n_stress)
-                            interface_dofs_elast[cell->face(face_n)->boundary_id()-1].push_back(el);
-//                            local_counter++;
-
-
-
+                    for (auto el : local_face_dof_indices)
+                    {
+                    	if(mortar_flag)
+						{
+							if (el < n_stress_mortar)
+								interface_dofs_elast[cell->face(face_n)->boundary_id()-1].push_back(el);
+						}
+						else
+						{
+							 if (el < n_stress)
+								interface_dofs_elast[cell->face(face_n)->boundary_id()-1].push_back(el);
+						}
                     }
                 }
         }
@@ -2196,7 +2267,7 @@ namespace dd_biot
     {
         TimerOutput::Scope t(computing_timer, "Solve bar");
         system_rhs_bar.sadd(1.0, system_rhs_bar_bc);
-        if (cg_iteration == 0 && prm.time == prm.time_step)
+        if (cg_iteration == 0 && prm.time == prm.time_step && mortar_flag != 2)
         {
 
 //          A_direct.initialize(system_matrix);
@@ -2445,49 +2516,50 @@ namespace dd_biot
     }
 
     template <int dim>
-    void MixedBiotProblemDD<dim>::compute_multiscale_basis ()
-    {
-        TimerOutput::Scope t(computing_timer, "Compute multiscale basis");
-        ConstraintMatrix constraints;
-        QGauss<dim-1> quad(qdegree);
-        FEFaceValues<dim> fe_face_values (fe, quad,
-                                          update_values    | update_normal_vectors |
-                                          update_quadrature_points  | update_JxW_values);
+	void MixedBiotProblemDD<dim>::compute_multiscale_basis ()
+	{
+		TimerOutput::Scope t(computing_timer, "Compute multiscale basis");
+		ConstraintMatrix constraints;
+		QGauss<dim-1> quad(qdegree);
+		FEFaceValues<dim> fe_face_values (fe, quad,
+										  update_values    | update_normal_vectors |
+										  update_quadrature_points  | update_JxW_values);
 
-        std::vector<size_t> block_sizes {solution_bar_mortar.block(0).size(), solution_bar_mortar.block(1).size()};
-        long n_interface_dofs = 0;
+//        std::vector<size_t> block_sizes {solution_bar_mortar.block(0).size(), solution_bar_mortar.block(1).size()};
+		long n_interface_dofs = 0;
 
-        for (auto vec : interface_dofs)
-            for (auto el : vec)
-                n_interface_dofs += 1;
+		for (auto vec : interface_dofs)
+			for (auto el : vec)
+				n_interface_dofs += 1;
+		n_mortar_dofs = n_interface_dofs;
+		multiscale_basis.resize(n_interface_dofs);
+		BlockVector<double> tmp_basis (solution_bar_mortar);
 
-        multiscale_basis.resize(n_interface_dofs);
-        BlockVector<double> tmp_basis (solution_bar_mortar);
+//        interface_fe_function.reinit(solution_bar);
+//        interface_fe_function = solution_bar;
+		unsigned int ind = 0;
+		for (unsigned int side=0; side<GeometryInfo<dim>::faces_per_cell; ++side)
+			for (unsigned int i=0; i<interface_dofs[side].size(); ++i)
+			{
+				interface_fe_function = 0;
+				multiscale_basis[ind].reinit(solution_bar_mortar);
+				multiscale_basis[ind] = 0;
 
-        interface_fe_function.reinit(solution_bar);
+				tmp_basis = 0;
+				tmp_basis[interface_dofs[side][i]] = 1.0;
+				project_mortar(P_coarse2fine, dof_handler_mortar, tmp_basis, quad, constraints, neighbors, dof_handler, interface_fe_function);
 
-        unsigned int ind = 0;
-        for (unsigned int side=0; side<GeometryInfo<dim>::faces_per_cell; ++side)
-            for (unsigned int i=0; i<interface_dofs[side].size(); ++i)
-            {
-                interface_fe_function = 0;
-                multiscale_basis[ind].reinit(solution_bar_mortar);
-                multiscale_basis[ind] = 0;
+				interface_fe_function.block(1) = 0;
+				interface_fe_function.block(2) = 0;
+				interface_fe_function.block(4) = 0;
+				assemble_rhs_star(fe_face_values);
+				solve_star();
 
-                tmp_basis = 0;
-                tmp_basis[interface_dofs[side][i]] = 1.0;
+				project_mortar(P_fine2coarse, dof_handler, solution_star, quad, constraints, neighbors, dof_handler_mortar, multiscale_basis[ind]);
+				ind += 1;
+			}
 
-//                project_mortar(P_coarse2fine, dof_handler_mortar, tmp_basis, quad, constraints, neighbors, dof_handler, interface_fe_function);
-
-                interface_fe_function.block(2) = 0;
-                assemble_rhs_star(fe_face_values);
-                solve_star();
-
-//                project_mortar(P_fine2coarse, dof_handler, solution_star, quad, constraints, neighbors, dof_handler_mortar, multiscale_basis[ind]);
-                ind += 1;
-            }
-
-    }
+	}
 
     //Functions for GMRES:-------------------
 
@@ -2644,7 +2716,40 @@ namespace dd_biot
 
           solve_bar();
 
-          interface_fe_function.reinit(solution_bar);
+//          interface_fe_function.reinit(solution_bar);
+          interface_fe_function = solution_bar;
+
+          if (mortar_flag == 1)
+			{
+	//              interface_fe_function_mortar.reinit(solution_bar_mortar);
+			  interface_fe_function_mortar=0;
+				project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints, neighbors, dof_handler_mortar, solution_bar_mortar);
+	//              project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints, neighbors, dof_handler, solution_bar_mortar);
+			}
+			else if (mortar_flag == 2)
+			{
+	//              interface_fe_function_mortar.reinit(solution_bar_mortar);
+			  interface_fe_function_mortar=0;
+				solution_star_mortar = 0;
+
+				// The computation of multiscale basis must necessarilly be after solve_bar() call,
+				// as in solve bar we factorize the system matrix into matrix A and clear the system matrix
+				// for the sake of memory. Same for solve_star() calls, they should only appear after the solve_bar()
+	//              compute_multiscale_basis();
+	//              pcout << "Done computing multiscale basis\n";
+				project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints, neighbors, dof_handler_mortar, solution_bar_mortar);
+
+				// Instead of solving subdomain problems we compute the response using basis
+				unsigned int j=0;
+				for (unsigned int side=0; side<n_faces_per_cell; ++side)
+					for (unsigned int i=0;i<interface_dofs[side].size();++i)
+					{
+	//                      solution_star_mortar.sadd(1.0, interface_fe_function_mortar[interface_dofs[side][i]], multiscale_basis[j]);
+					  solution_star_mortar.block(0).sadd(1.0, interface_fe_function_mortar[interface_dofs[side][i]], multiscale_basis[j].block(0));
+						solution_star_mortar.block(3).sadd(1.0, interface_fe_function_mortar[interface_dofs[side][i]], multiscale_basis[j].block(3));
+						j += 1;
+					}
+			}
 
 
 
@@ -2678,10 +2783,72 @@ namespace dd_biot
 
 
                 // Right now it is effectively solution_bar - A\lambda (0)
-                  for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
-                    r[side][i] = get_normal_direction(side) *
-                                   solution_bar[interface_dofs[side][i]] -
-                                 get_normal_direction(side) *solution_star[interface_dofs[side][i]] ;
+                if(mortar_flag)
+					for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
+					{
+							if (interface_dofs[side][i]<n_stress_mortar)
+//                		if (true)
+								{
+								r[side][i] = -(get_normal_direction(side) *
+											   solution_bar_mortar[interface_dofs[side][i]] );
+//
+//								r_b[side][i] = -(get_normal_direction(side) *
+//																			   solution_bar_mortar[interface_dofs[side][i]]);
+								}
+							else
+							{
+//								r[side][i] = prm.time_step*get_normal_direction(side) *
+//											   solution_bar[interface_dofs[side][i]]
+//															- prm.time_step* get_normal_direction(side) *solution_star[interface_dofs[side][i]] ;
+								r[side][i] = get_normal_direction(side) *
+											   solution_bar_mortar[interface_dofs[side][i]];
+
+
+//								r_b[side][i] = prm.time_step*get_normal_direction(side) *
+//																			   solution_bar[interface_dofs[side][i]];
+
+//								r_b[side][i] = get_normal_direction(side)*solution_bar_mortar[interface_dofs[side][i]];
+
+							}
+					}
+				else
+					for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
+					{
+							if (interface_dofs[side][i]<n_stress)
+//                		if (true)
+								{
+								r[side][i] = -(get_normal_direction(side) *
+											   solution_bar[interface_dofs[side][i]])
+											   - get_normal_direction(side) *solution_star[interface_dofs[side][i]] ;
+
+//								r_b[side][i] = -(get_normal_direction(side) *
+//																			   solution_bar[interface_dofs[side][i]]);
+								}
+							else
+							{
+//								r[side][i] = prm.time_step*get_normal_direction(side) *
+//											   solution_bar[interface_dofs[side][i]]
+//															- prm.time_step* get_normal_direction(side) *solution_star[interface_dofs[side][i]] ;
+								r[side][i] = get_normal_direction(side) *
+											   solution_bar[interface_dofs[side][i]]
+															-get_normal_direction(side) *solution_star[interface_dofs[side][i]] ;
+
+//								r_b[side][i] = prm.time_step*get_normal_direction(side) *
+//																			   solution_bar[interface_dofs[side][i]];
+
+//								r_b[side][i] = get_normal_direction(side)*solution_bar[interface_dofs[side][i]];
+
+
+							}
+					}
+
+
+
+
+//                  for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
+//                    r[side][i] = get_normal_direction(side) *
+//                                   solution_bar[interface_dofs[side][i]] -
+//                                 get_normal_direction(side) *solution_star[interface_dofs[side][i]] ;
 
 
 
@@ -4130,41 +4297,7 @@ namespace dd_biot
             pcout << "Projecting the initial conditions...\n";
             {
               InitialCondition<dim> ic;
-//              if(split_flag==0){
-//            	  ConstraintMatrix constraints_tmp(constraints);
-//            	  //pressure boundary  values for IC---------------------
-//            	                  typename FunctionMap<dim>::type pressure_bc;
-//            	                  std::map<types::global_dof_index,double> boundary_values_pressure;
-//
-//            	                  ConstantFunction<dim> velocity_bc_func(1,dim*dim + dim + 0.5*dim*(dim-1)+dim+1);
-//            	                  pressure_bc[104] = &velocity_bc_func;
-//
-//
-//            	                  VectorTools::project_boundary_values (dof_handler,
-//            	                                                        pressure_bc,
-//            	                                                        QGauss<dim-1>(degree+3),
-//            	                                                        boundary_values_pressure);
-//
-//            	                  for (auto it=boundary_values_pressure.begin(); it!=boundary_values_pressure.end(); ++it)
-//            	                      if (it->first<n_Elast+n_flux)
-//            	                          boundary_values_pressure.erase(it->first);
-//
-//            	                  typename std::map<types::global_dof_index,double>::const_iterator boundary_value_pres =
-//            	                          boundary_values_pressure.begin();
-//            	                  for ( ; boundary_value_pres !=boundary_values_pressure.end(); ++boundary_value_pres)
-//            	                  {
-//            	                      if (!constraints_tmp.is_constrained(boundary_value_pres->first))
-//            	                      {
-//            	                          constraints_tmp.add_line (boundary_value_pres->first);
-//            	                          constraints_tmp.set_inhomogeneity (boundary_value_pres->first,
-//            	                                                         boundary_value_pres->second);
-//            	                      }
-//            	                  }
-//
-//            	                  //---------------------------------------------------end of Pressure IC
-//            	  constraints_tmp.close();
-//
-//              }
+
               ConstraintMatrix constraints_tmp(constraints);
               constraints_tmp.clear();
               constraints_tmp.close();
@@ -4187,25 +4320,20 @@ namespace dd_biot
 /*
  *  Put the find_IC() function here. also put assemble_system_elast, get_interface_dofs_elast etc hre.
  */
-              assemble_system_elast();
-              get_interface_dofs_elast();
-              Find_IC(maxiter);
-              solution.block(4) = old_solution.block(4);
-              old_solution = solution;
-
-//              solution = old_solution;
-
-
-//        	  if(this_mpi == 0) //testing whether solution_elast has the displacement part.
-//        	  {
-//        		  std::ofstream testing_file("testing_file.output", std::ofstream::app);
-//        		  testing_file<<"Entering a new time step..\n";
-//        		    	  for (auto el:solution.block(1))
-//        		    	  {
-//        		    		  testing_file<<el<<std::endl;
-//        		    	  }
-//        	  }
-
+              if(ic_constr_flag) //enable for initial data construction
+              {
+            	  assemble_system_elast();
+            	  get_interface_dofs_elast();
+            	  Find_IC(maxiter);
+            	  solution.block(4) = old_solution.block(4);
+            	  old_solution = solution;
+				  interface_fe_function_old = interface_fe_function;
+              }
+              else //no initial data construction needed
+              {
+            	  solution = old_solution;
+				  interface_fe_function_old = 0;
+              }
 
               output_results(cycle,refine);
               if(split_flag==2)
@@ -4237,6 +4365,13 @@ namespace dd_biot
             if(split_flag!=0)
           	  max_cg_iteration_darcy=0;
 
+            if(mortar_flag == 2)
+			{
+				pcout << "  ...factorized..." << "\n";
+				A_direct.initialize(system_matrix);
+				compute_multiscale_basis();
+				pcout << "Done computing multiscale basis\n";
+			}
             for(unsigned int i=0; i<prm.num_time_steps; i++)
             {
               prm.time += prm.time_step;
@@ -4248,9 +4383,17 @@ namespace dd_biot
               if (!split_flag)
               {
             	  solution.block(1).sadd(prm.time_step, 1.0, old_solution.block(1));  // recovering displacement soluton from derivative
-//            	  solution.block(2).sadd(prm.time_step, 1.0, old_solution.block(2)); //recovering rotation solution from derivative
+            	  solution.block(2).sadd(prm.time_step, 1.0, old_solution.block(2)); //recovering rotation solution from derivative
+            	  if(mortar_flag)
+				  {
+					  interface_fe_function.block(0).sadd(prm.time_step, 1.0, interface_fe_function_old.block(0));
+				  }
               }
               old_solution = solution;
+              if(mortar_flag)
+			   {
+				  interface_fe_function_old.block(0) = interface_fe_function.block(0);
+			   }
               output_results (cycle, refine);
 //              max_cg_iteration=0;
 //              if(split_flag!=0)
