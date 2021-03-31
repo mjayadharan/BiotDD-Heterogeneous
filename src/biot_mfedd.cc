@@ -7,7 +7,7 @@
  A new method for local_gmres is written for monolithic scheme.
  * ---------------------------------------------------------------------
  *
- * Authors: Manu Jayadharan, Eldar Khattatov University of Pittsburgh, 2018 - 2019
+ * Authors: Manu Jayadharan, Eldar Khattatov University of Pittsburgh, 2018 - 2021
  */
 
 // Internals,.
@@ -179,7 +179,10 @@ namespace dd_biot
 
 
         if (mortar_flag)
+        {
             dof_handler_mortar.distribute_dofs(fe_mortar);
+            DoFRenumbering::component_wise (dof_handler_mortar);
+        }
 
         std::vector<types::global_dof_index> dofs_per_component (dim*dim + dim + 0.5*dim*(dim-1) + dim + 1);
         DoFTools::count_dofs_per_component (dof_handler, dofs_per_component);
@@ -3821,9 +3824,9 @@ namespace dd_biot
         unsigned int n_processes = Utilities::MPI::n_mpi_processes(mpi_communicator);
         unsigned int this_mpi = Utilities::MPI::this_mpi_process(mpi_communicator);
 
-        /* From here disabling for longer runs:*/
-
         double total_time = prm.time_step * prm.num_time_steps;
+
+        /* From here disabling for longer runs:*/
         if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-12) || (cycle == refine-1 && fabs(prm.time)<1.0e-12))
         {
 

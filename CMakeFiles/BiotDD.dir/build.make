@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # Include any dependencies generated for this target.
 include CMakeFiles/BiotDD.dir/depend.make
@@ -59,29 +59,29 @@ include CMakeFiles/BiotDD.dir/flags.make
 
 CMakeFiles/BiotDD.dir/src/biot_dd.cc.o: CMakeFiles/BiotDD.dir/flags.make
 CMakeFiles/BiotDD.dir/src/biot_dd.cc.o: src/biot_dd.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/BiotDD.dir/src/biot_dd.cc.o"
-	/home/wickedboy_pc/bin/mpicxx  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/BiotDD.dir/src/biot_dd.cc.o -c /home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_dd.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/BiotDD.dir/src/biot_dd.cc.o"
+	/home/wickedboy_pc/bin/mpicxx  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/BiotDD.dir/src/biot_dd.cc.o -c /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_dd.cc
 
 CMakeFiles/BiotDD.dir/src/biot_dd.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/BiotDD.dir/src/biot_dd.cc.i"
-	/home/wickedboy_pc/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_dd.cc > CMakeFiles/BiotDD.dir/src/biot_dd.cc.i
+	/home/wickedboy_pc/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_dd.cc > CMakeFiles/BiotDD.dir/src/biot_dd.cc.i
 
 CMakeFiles/BiotDD.dir/src/biot_dd.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/BiotDD.dir/src/biot_dd.cc.s"
-	/home/wickedboy_pc/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_dd.cc -o CMakeFiles/BiotDD.dir/src/biot_dd.cc.s
+	/home/wickedboy_pc/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_dd.cc -o CMakeFiles/BiotDD.dir/src/biot_dd.cc.s
 
 CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.o: CMakeFiles/BiotDD.dir/flags.make
 CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.o: src/biot_mfedd.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.o"
-	/home/wickedboy_pc/bin/mpicxx  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.o -c /home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_mfedd.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.o"
+	/home/wickedboy_pc/bin/mpicxx  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.o -c /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_mfedd.cc
 
 CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.i"
-	/home/wickedboy_pc/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_mfedd.cc > CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.i
+	/home/wickedboy_pc/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_mfedd.cc > CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.i
 
 CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.s"
-	/home/wickedboy_pc/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_mfedd.cc -o CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.s
+	/home/wickedboy_pc/bin/mpicxx $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_mfedd.cc -o CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.s
 
 # Object files for target BiotDD
 BiotDD_OBJECTS = \
@@ -117,7 +117,7 @@ BiotDD: /usr/lib/x86_64-linux-gnu/libgslcblas.so
 BiotDD: /usr/lib/x86_64-linux-gnu/libscalapack-openmpi.so
 BiotDD: /usr/lib/x86_64-linux-gnu/libopenblas.so
 BiotDD: CMakeFiles/BiotDD.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable BiotDD"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable BiotDD"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/BiotDD.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -130,6 +130,6 @@ CMakeFiles/BiotDD.dir/clean:
 .PHONY : CMakeFiles/BiotDD.dir/clean
 
 CMakeFiles/BiotDD.dir/depend:
-	cd /home/wickedboy_pc/git-repositories/Biot_heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/BiotDD.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/BiotDD.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/BiotDD.dir/depend
 

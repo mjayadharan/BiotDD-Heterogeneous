@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # Utility rule file for release.
 
@@ -54,8 +54,8 @@ CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
 include CMakeFiles/release.dir/progress.make
 
 CMakeFiles/release:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Switching CMAKE_BUILD_TYPE to Release"
-	/usr/bin/cmake -DCMAKE_BUILD_TYPE=Release /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Switching CMAKE_BUILD_TYPE to Release"
+	/usr/bin/cmake -DCMAKE_BUILD_TYPE=Release /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 	/usr/bin/cmake -E echo "***"
 	/usr/bin/cmake -E echo "*** Switched to Release mode. Now recompile with:  \$$ make"
 	/usr/bin/cmake -E echo "***"
@@ -75,6 +75,6 @@ CMakeFiles/release.dir/clean:
 .PHONY : CMakeFiles/release.dir/clean
 
 CMakeFiles/release.dir/depend:
-	cd /home/wickedboy_pc/git-repositories/Biot_heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/release.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/release.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/release.dir/depend
 

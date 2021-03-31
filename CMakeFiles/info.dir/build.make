@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # Utility rule file for info.
 
@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
 include CMakeFiles/info.dir/progress.make
 
 CMakeFiles/info:
-	/usr/bin/cmake -P /home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/print_usage.cmake
+	/usr/bin/cmake -P /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/print_usage.cmake
 
 info: CMakeFiles/info
 info: CMakeFiles/info.dir/build.make
@@ -71,6 +71,6 @@ CMakeFiles/info.dir/clean:
 .PHONY : CMakeFiles/info.dir/clean
 
 CMakeFiles/info.dir/depend:
-	cd /home/wickedboy_pc/git-repositories/Biot_heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/info.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/info.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/info.dir/depend
 

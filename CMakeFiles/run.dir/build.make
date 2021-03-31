@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # Utility rule file for run.
 
@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
 include CMakeFiles/run.dir/progress.make
 
 CMakeFiles/run: BiotDD
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Run BiotDD with Release configuration"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Run BiotDD with Release configuration"
 	./BiotDD
 
 run: CMakeFiles/run
@@ -72,6 +72,6 @@ CMakeFiles/run.dir/clean:
 .PHONY : CMakeFiles/run.dir/clean
 
 CMakeFiles/run.dir/depend:
-	cd /home/wickedboy_pc/git-repositories/Biot_heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/run.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/run.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/run.dir/depend
 

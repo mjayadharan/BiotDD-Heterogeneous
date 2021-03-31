@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_dd.cc" "/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/BiotDD.dir/src/biot_dd.cc.o"
-  "/home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_mfedd.cc" "/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.o"
+  "/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_dd.cc" "/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/BiotDD.dir/src/biot_dd.cc.o"
+  "/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_mfedd.cc" "/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/BiotDD.dir/src/biot_mfedd.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

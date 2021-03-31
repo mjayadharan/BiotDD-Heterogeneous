@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/biot_mfedd.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/biot_mfedd.h
 deal.II/base/conditional_ostream.h
 -
 deal.II/base/convergence_table.h
@@ -26,19 +26,19 @@ iostream
 cstdlib
 -
 projector.h
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/projector.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/projector.h
 data.h
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/data.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/data.h
 
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/data.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/data.h
 deal.II/base/function.h
 -
 deal.II/base/tensor_function.h
 -
 physics.h
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/physics.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/physics.h
 
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/physics.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/physics.h
 fstream
 -
 deal.II/fe/fe_dgq.h
@@ -50,7 +50,7 @@ deal.II/numerics/data_out.h
 deal.II/numerics/fe_field_function.h
 -
 
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/projector.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/projector.h
 deal.II/base/quadrature_lib.h
 -
 deal.II/dofs/dof_handler.h
@@ -68,11 +68,11 @@ deal.II/lac/sparse_direct.h
 deal.II/base/work_stream.h
 -
 
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/utilities.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/utilities.h
 projector.h
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/projector.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/projector.h
 
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_mfedd.cc
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_mfedd.cc
 deal.II/base/quadrature_lib.h
 -
 deal.II/base/logstream.h
@@ -138,11 +138,11 @@ iostream
 random
 -
 ../inc/biot_mfedd.h
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/biot_mfedd.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/biot_mfedd.h
 ../inc/utilities.h
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/utilities.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/utilities.h
 ../inc/data.h
-/home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/data.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/data.h
 
 /home/wickedboy_pc/libraries/dealii.9.2-installed/include/deal.II/base/aligned_vector.h
 deal.II/base/config.h

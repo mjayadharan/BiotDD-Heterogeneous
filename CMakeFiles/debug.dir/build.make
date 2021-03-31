@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # Utility rule file for debug.
 
@@ -54,8 +54,8 @@ CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
 include CMakeFiles/debug.dir/progress.make
 
 CMakeFiles/debug:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Switching CMAKE_BUILD_TYPE to Debug"
-	/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Switching CMAKE_BUILD_TYPE to Debug"
+	/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 	/usr/bin/cmake -E echo "***"
 	/usr/bin/cmake -E echo "*** Switched to Debug mode. Now recompile with:  \$$ make"
 	/usr/bin/cmake -E echo "***"
@@ -75,6 +75,6 @@ CMakeFiles/debug.dir/clean:
 .PHONY : CMakeFiles/debug.dir/clean
 
 CMakeFiles/debug.dir/depend:
-	cd /home/wickedboy_pc/git-repositories/Biot_heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/debug.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/debug.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/debug.dir/depend
 

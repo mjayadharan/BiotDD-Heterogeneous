@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_SOURCE_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
+CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous
 
 # Utility rule file for strip_comments.
 
@@ -54,8 +54,8 @@ CMAKE_BINARY_DIR = /home/wickedboy_pc/git-repositories/Biot_heterogeneous
 include CMakeFiles/strip_comments.dir/progress.make
 
 CMakeFiles/strip_comments:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "strip comments"
-	/usr/bin/perl -pi -e 's#^[ \t]*//.*\n##g;' /home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_dd.cc /home/wickedboy_pc/git-repositories/Biot_heterogeneous/src/biot_mfedd.cc /home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/biot_mfedd.h /home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/data.h /home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/physics.h /home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/projector.h /home/wickedboy_pc/git-repositories/Biot_heterogeneous/inc/utilities.h
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "strip comments"
+	/usr/bin/perl -pi -e 's#^[ \t]*//.*\n##g;' /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_dd.cc /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_mfedd.cc /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/biot_mfedd.h /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/data.h /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/physics.h /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/projector.h /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/utilities.h
 
 strip_comments: CMakeFiles/strip_comments
 strip_comments: CMakeFiles/strip_comments.dir/build.make
@@ -72,6 +72,6 @@ CMakeFiles/strip_comments.dir/clean:
 .PHONY : CMakeFiles/strip_comments.dir/clean
 
 CMakeFiles/strip_comments.dir/depend:
-	cd /home/wickedboy_pc/git-repositories/Biot_heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous /home/wickedboy_pc/git-repositories/Biot_heterogeneous/CMakeFiles/strip_comments.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/CMakeFiles/strip_comments.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/strip_comments.dir/depend
 
