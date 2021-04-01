@@ -130,6 +130,7 @@ namespace dd_biot
 
       std::fill(err.pressure_disp_linf_midcell_errors.begin(), err.pressure_disp_linf_midcell_errors.end(), 0.0);
       std::fill(err.pressure_disp_linf_midcell_norms.begin(), err.pressure_disp_linf_midcell_norms.end(), 0.0);
+      //per
     }
 
     // MixedBiotProblemDD::make_grid_and_dofs
@@ -2678,6 +2679,8 @@ namespace dd_biot
 
 
           ConstraintMatrix  constraints_gmres;
+          constraints_gmres.clear();
+          constraints_gmres.close();
           FEFaceValues<dim> fe_face_values(fe,
                                            quad,
                                            update_values | update_normal_vectors |
@@ -2723,8 +2726,26 @@ namespace dd_biot
 			{
 	//              interface_fe_function_mortar.reinit(solution_bar_mortar);
 			  interface_fe_function_mortar=0;
-				project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints, neighbors, dof_handler_mortar, solution_bar_mortar);
+				project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints_gmres, neighbors, dof_handler_mortar, solution_bar_mortar);
 	//              project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints, neighbors, dof_handler, solution_bar_mortar);
+
+
+//				if(this_mpi == 1)
+//				{
+//					 std::ofstream file1("solution_bar.txt");
+//					  for(auto el: solution_bar)
+//					  {
+//						  file1<<el<<std::endl;
+//					  }
+//
+//					  std::ofstream file2("solution_bar_mortar.txt");
+//					  for(auto el: solution_bar_mortar)
+//					  {
+//						  file2<<el<<std::endl;
+//					  }
+//
+//				}
+
 			}
 			else if (mortar_flag == 2)
 			{
@@ -2737,7 +2758,7 @@ namespace dd_biot
 				// for the sake of memory. Same for solve_star() calls, they should only appear after the solve_bar()
 	//              compute_multiscale_basis();
 	//              pcout << "Done computing multiscale basis\n";
-				project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints, neighbors, dof_handler_mortar, solution_bar_mortar);
+				project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints_gmres, neighbors, dof_handler_mortar, solution_bar_mortar);
 
 				// Instead of solving subdomain problems we compute the response using basis
 				unsigned int j=0;
@@ -2840,7 +2861,7 @@ namespace dd_biot
 
 
 							}
-					}
+					} //end of mortar modification
 
 
 
@@ -2945,18 +2966,91 @@ namespace dd_biot
             	  if (neighbors[side] >= 0)
             		  interface_data[side]=Q_side[side][k_counter];
 
+              if (mortar_flag == 1)
+				{
+					for (unsigned int side=0;side<n_faces_per_cell;++side)
+						for (unsigned int i=0;i<interface_dofs[side].size();++i)
+							interface_fe_function_mortar[interface_dofs[side][i]] = interface_data[side][i];
 
-                  for (unsigned int side = 0; side < n_faces_per_cell; ++side)
-                    for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
-                      interface_fe_function[interface_dofs[side][i]] =
-                        interface_data[side][i];
+					project_mortar(P_coarse2fine, dof_handler_mortar,
+								   interface_fe_function_mortar,
+								   quad,
+								   constraints_gmres,
+								   neighbors,
+								   dof_handler,
+								   interface_fe_function);
+	//                  project_mortar(P_coarse2fine, dof_handler,
+	//                                                   interface_fe_function_mortar,
+	//                                                   quad,
+	//                                                   constraints,
+	//                                                   neighbors,
+	//                                                   dof_handler,
+	//                                                   interface_fe_function);
 
-                  interface_fe_function.block(2) = 0;
-                  assemble_rhs_star(fe_face_values);
-                  solve_star();
+					interface_fe_function.block(2) = 0;
+
+					assemble_rhs_star(fe_face_values);
+					solve_star();
+				}
+				else if (mortar_flag == 2)
+				{
+					solution_star_mortar = 0;
+					unsigned int j=0;
+					for (unsigned int side=0; side<n_faces_per_cell; ++side)
+						for (unsigned int i=0;i<interface_dofs[side].size();++i)
+						{
+
+	//                          solution_star_mortar.sadd(1.0, interface_data[side][i], multiscale_basis[j]);
+							solution_star_mortar.block(0).sadd(1.0, interface_data[side][i], multiscale_basis[j].block(0));
+						  solution_star_mortar.block(3).sadd(1.0, interface_data[side][i], multiscale_basis[j].block(3));
+							j += 1;
+						}
+
+				}
+				else
+				{
+					for (unsigned int side=0; side<n_faces_per_cell; ++side)
+						for (unsigned int i=0; i<interface_dofs[side].size(); ++i)
+							interface_fe_function[interface_dofs[side][i]] = interface_data[side][i];
+
+					interface_fe_function.block(2) = 0;
+					assemble_rhs_star(fe_face_values);
+					solve_star();
+				}
+
+
+
+//                  for (unsigned int side = 0; side < n_faces_per_cell; ++side)
+//                    for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
+//                      interface_fe_function[interface_dofs[side][i]] =
+//                        interface_data[side][i];
+//
+//                  interface_fe_function.block(2) = 0;
+//                  assemble_rhs_star(fe_face_values);
+//                  solve_star();
 
 
               cg_iteration++;
+              if (mortar_flag == 1)
+              {
+                                      project_mortar(P_fine2coarse,
+                                                     dof_handler,
+                                                     solution_star,
+                                                     quad,
+                                                     constraints_gmres,
+                                                     neighbors,
+                                                     dof_handler_mortar,
+                                                     solution_star_mortar);
+              //            	  project_mortar(P_fine2coarse,
+              //            	                                         dof_handler,
+              //            	                                         solution_star,
+              //            	                                         quad,
+              //            	                                         constraints,
+              //            	                                         neighbors,
+              //            	                                         dof_handler,
+              //            	                                         solution_star_mortar);
+
+			  }
 
               //defing q  to push_back to Q (Arnoldi algorithm)
     //          std::vector<std::vector<double>> q(n_faces_per_cell);
@@ -2973,10 +3067,35 @@ namespace dd_biot
     //                beta_side_d[side]  = 0;
 
                     // Create vector of u\dot n to send
-                      for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
-                        interface_data_send[side][i] =
-                          get_normal_direction(side) *
-                          solution_star[interface_dofs[side][i]];
+                	if (mortar_flag)
+						for (unsigned int i=0; i<interface_dofs[side].size(); ++i)
+							if (interface_dofs[side][i] < n_stress_mortar)
+							{
+								interface_data_send[side][i] = get_normal_direction(side) * solution_star_mortar[interface_dofs[side][i]];
+							}
+							else
+							{
+	//                        		interface_data_send[side][i] = -prm.time_step * get_normal_direction(side) * solution_star[interface_dofs[side][i]];
+								interface_data_send[side][i] = - get_normal_direction(side) * solution_star_mortar[interface_dofs[side][i]];
+							}
+				    else
+						for (unsigned int i=0; i<interface_dofs[side].size(); ++i)
+	//                            interface_data_send[side][i] = get_normal_direction(side) * solution_star[interface_dofs[side][i]];
+							if (interface_dofs[side][i] < n_stress)
+							{
+								interface_data_send[side][i] = get_normal_direction(side) * solution_star[interface_dofs[side][i]];
+							}
+							else
+							{
+	//                        		interface_data_send[side][i] = -prm.time_step * get_normal_direction(side) * solution_star[interface_dofs[side][i]];
+								interface_data_send[side][i] = - get_normal_direction(side) * solution_star[interface_dofs[side][i]];
+							}
+
+
+//                      for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
+//                        interface_data_send[side][i] =
+//                          get_normal_direction(side) *
+//                          solution_star[interface_dofs[side][i]];
 
                     MPI_Send(&interface_data_send[side][0],
                              interface_dofs[side].size(),
@@ -2995,7 +3114,7 @@ namespace dd_biot
                     // Compute Ap and with it compute alpha
                     for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
                       {
-                        Ap[side][i] = -(interface_data_send[side][i] +
+                        Ap[side][i] = (interface_data_send[side][i] +
                                         interface_data_receive[side][i]);
 
 
@@ -3084,9 +3203,9 @@ namespace dd_biot
 
 
 //
-//              pcout << "\r  ..." << cg_iteration
-//                    << " iterations completed, (residual = " << combined_error_iter
-//                    << ")..." << std::flush;
+              pcout << "\r  ..." << cg_iteration
+                    << " iterations completed, (residual = " << combined_error_iter
+                    << ")..." << std::flush;
               // Exit criterion
               if (combined_error_iter < tolerance)
                 {
@@ -3126,12 +3245,45 @@ namespace dd_biot
                          for(unsigned int j=0; j<=k_counter; ++j)
                           lambda[side][i] += Q_side[side][j][i]*y[j];
           //we can replace lambda here and just add interface_data(skip one step below)
+          if (mortar_flag)
+		   {
+			   interface_data = lambda;
+			   for (unsigned int side=0;side<n_faces_per_cell;++side)
+				   for (unsigned int i=0;i<interface_dofs[side].size();++i)
+					   interface_fe_function_mortar[interface_dofs[side][i]] = interface_data[side][i];
 
-              interface_data = lambda;
-              for (unsigned int side = 0; side < n_faces_per_cell; ++side)
-                for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
-                  interface_fe_function[interface_dofs[side][i]] =
-                    interface_data[side][i];
+			   project_mortar(P_coarse2fine,
+							  dof_handler_mortar,
+							  interface_fe_function_mortar,
+							  quad,
+							  constraints_gmres,
+							  neighbors,
+							  dof_handler,
+							  interface_fe_function);
+//                     project_mortar(P_coarse2fine,
+//                                                         dof_handler,
+//                                                         interface_fe_function_mortar,
+//                                                         quad,
+//                                                         constraints,
+//                                                         neighbors,
+//                                                         dof_handler,
+//                                                         interface_fe_function);
+			   interface_fe_function.block(2) = 0;
+		   }
+		   else
+		   {
+			   interface_data = lambda;
+			   for (unsigned int side=0; side<n_faces_per_cell; ++side)
+				   for (unsigned int i=0; i<interface_dofs[side].size(); ++i)
+					   interface_fe_function[interface_dofs[side][i]] = interface_data[side][i];
+		   }
+
+
+//              interface_data = lambda;
+//              for (unsigned int side = 0; side < n_faces_per_cell; ++side)
+//                for (unsigned int i = 0; i < interface_dofs[side].size(); ++i)
+//                  interface_fe_function[interface_dofs[side][i]] =
+//                    interface_data[side][i];
 
 
           assemble_rhs_star(fe_face_values);
@@ -3188,8 +3340,6 @@ namespace dd_biot
         		interface_data[side].resize(interface_dofs_darcy[side].size(), 0);
 
         	}
-
-
           }
 
       // Extra for projections from mortar to fine grid and RHS assembly
@@ -3198,6 +3348,8 @@ namespace dd_biot
 
 
       ConstraintMatrix  constraints_cg;
+      constraints_cg.clear();
+      constraints_cg.close();
       FEFaceValues<dim> fe_face_values(fe,
                                        quad,
                                        update_values | update_normal_vectors |
@@ -3217,10 +3369,17 @@ namespace dd_biot
       else if (split_order_flag==1)
     	  solve_bar_darcy();
       interface_fe_function.reinit(solution);
-//      if(split_order_flag==0)
-//    	  interface_fe_function.reinit(solution_bar_elast);
-//      else if(split_order_flag==1)
-//          	  interface_fe_function.reinit(solution_bar_darcy);
+
+      if (mortar_flag)
+	  {
+		  interface_fe_function_mortar.reinit(solution_bar_mortar);
+		  solution_bar = 0;
+		  for (unsigned int i=0; i<3; i++)
+		  {
+			  solution_bar.block(i) = solution_bar_elast.block(i);
+		  }
+		  project_mortar(P_fine2coarse, dof_handler, solution_bar, quad, constraints_cg, neighbors, dof_handler_mortar, solution_bar_mortar);
+	  }
 
       double l0 = 0.0;
       // CG with rhs being 0 and initial guess lambda = 0
@@ -3248,12 +3407,26 @@ namespace dd_biot
 //            r_receive_buffer.resize(r[side].size(),0);
 
             // Right now it is effectively solution_bar - A\lambda (0)
-              for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i){
-                r[side][i] = get_normal_direction(side) *
-                               solution_bar_elast[interface_dofs_elast[side][i]] -
-                             get_normal_direction(side) * solution_star_elast[interface_dofs_elast[side][i]];
-              }
+            if (mortar_flag)
+			   for (unsigned int i=0;i<interface_dofs_elast[side].size();++i)
+			   {
+				   r[side][i] = get_normal_direction(side) * solution_bar_mortar[interface_dofs_elast[side][i]];
+			   }
+			else
+			  for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i)
+			  {
+				r[side][i] = get_normal_direction(side) *
+							   solution_bar_elast[interface_dofs_elast[side][i]] -
+							 get_normal_direction(side) * solution_star_elast[interface_dofs_elast[side][i]];
+			  }
 
+
+//              for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i)
+//              {
+//                r[side][i] = get_normal_direction(side) *
+//                               solution_bar_elast[interface_dofs_elast[side][i]] -
+//                             get_normal_direction(side) * solution_star_elast[interface_dofs_elast[side][i]];
+//              }
 
         	}
         	 else if(split_order_flag==1)
@@ -3315,30 +3488,65 @@ namespace dd_biot
           iteration_counter++;
           interface_data = p;
 
-              for (unsigned int side = 0; side < n_faces_per_cell; ++side)
-            	  if(split_order_flag==0){
-            		  for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i)
-            			  interface_fe_function[interface_dofs_elast[side][i]] = interface_data[side][i];
-            	  }
-            	  else if(split_order_flag==1){
-            		  for (unsigned int i = 0; i < interface_dofs_darcy[side].size(); ++i)
-            		              			  interface_fe_function[interface_dofs_darcy[side][i]] = interface_data[side][i];
-            	  }
+          if (mortar_flag)
+			{
+			  for (unsigned int side=0;side<n_faces_per_cell;++side)
+				  for (unsigned int i=0;i<interface_dofs_elast[side].size();++i)
+					  interface_fe_function_mortar[interface_dofs_elast[side][i]] = interface_data[side][i];
+
+			  interface_fe_function = 0;
+			  project_mortar(P_coarse2fine, dof_handler_mortar,
+							 interface_fe_function_mortar,
+							 quad,
+							 constraints_cg,
+							 neighbors,
+							 dof_handler,
+							 interface_fe_function);
+	//			  interface_fe_function.block(2) = 0;
+
+			  assemble_rhs_star_elast(fe_face_values);
+			  solve_star_elast();
+			  solution_star=0;
+			  solution_star.block(0) = solution_star_elast.block(0);
+			}
+			else
+			{
+			for (unsigned int side = 0; side < n_faces_per_cell; ++side)
+				  if(split_order_flag==0){
+					  for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i)
+						  interface_fe_function[interface_dofs_elast[side][i]] = interface_data[side][i];
+				  }
+				  else if(split_order_flag==1){
+					  for (unsigned int i = 0; i < interface_dofs_darcy[side].size(); ++i)
+											  interface_fe_function[interface_dofs_darcy[side][i]] = interface_data[side][i];
+				  }
 
 
-              if(split_order_flag==0){
-            	  interface_fe_function.block(2) = 0;
-            	  assemble_rhs_star_elast(fe_face_values);
-            	  solve_star_elast();
-              }
-              else if(split_order_flag==1){
-                       	  assemble_rhs_star_darcy(fe_face_values);
-                       	  solve_star_darcy();
-              }
+				if(split_order_flag==0)
+				{
+				  interface_fe_function.block(2) = 0;
+				  assemble_rhs_star_elast(fe_face_values);
+				  solve_star_elast();
+				}
+				else if(split_order_flag==1){
+							  assemble_rhs_star_darcy(fe_face_values);
+							  solve_star_darcy();
+				}
+			}
 //              solve_star();
 
 
           cg_iteration++;
+
+          if (mortar_flag)
+			  project_mortar(P_fine2coarse,
+							 dof_handler,
+							 solution_star,
+							 quad,
+							 constraints_cg,
+							 neighbors,
+							 dof_handler_mortar,
+							 solution_star_mortar);
 
 
           for (unsigned int side = 0; side < n_faces_per_cell; ++side)
@@ -3351,10 +3559,18 @@ namespace dd_biot
 
                 // Create vector of u\dot n to send
                 if(split_order_flag==0){
-                  for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i)
-                    interface_data_send[side][i] =
-                      get_normal_direction(side) *
-                      solution_star_elast[interface_dofs_elast[side][i]];
+                	if (mortar_flag)
+					{
+						for (unsigned int i=0; i<interface_dofs_elast[side].size(); ++i)
+							interface_data_send[side][i] = get_normal_direction(side)
+														   * solution_star_mortar[interface_dofs_elast[side][i]];
+					}
+					else
+					{
+						for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i)
+							interface_data_send[side][i] =get_normal_direction(side)
+														  * solution_star_elast[interface_dofs_elast[side][i]];
+					}
                 }
                 else if(split_order_flag==1){
                                   for (unsigned int i = 0; i < interface_dofs_darcy[side].size(); ++i)
@@ -3496,14 +3712,32 @@ namespace dd_biot
           //
           if(split_order_flag==0)
           {
-			  for (unsigned int side = 0; side < n_faces_per_cell; ++side)
-				for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i)
-				  interface_fe_function[interface_dofs_elast[side][i]] =
-					interface_data[side][i];
+        	  if (mortar_flag)
+				 {
+					 for (unsigned int side=0;side<n_faces_per_cell;++side)
+						 for (unsigned int i=0;i<interface_dofs_elast[side].size();++i)
+							 interface_fe_function_mortar[interface_dofs_elast[side][i]] = interface_data[side][i];
 
+					 project_mortar(P_coarse2fine,
+									dof_handler_mortar,
+									interface_fe_function_mortar,
+									quad,
+									constraints_cg,
+									neighbors,
+									dof_handler,
+									interface_fe_function);
+					 interface_fe_function.block(2) = 0;
+				 }
+				else
+				{
+				  for (unsigned int side = 0; side < n_faces_per_cell; ++side)
+					for (unsigned int i = 0; i < interface_dofs_elast[side].size(); ++i)
+					  interface_fe_function[interface_dofs_elast[side][i]] =
+						interface_data[side][i];
+				}
 
-		  assemble_rhs_star_elast(fe_face_values);
-		  solve_star_elast();
+			  assemble_rhs_star_elast(fe_face_values);
+			  solve_star_elast();
           }
           else if(split_order_flag==1)
                 {
@@ -3963,6 +4197,10 @@ namespace dd_biot
         	convergence_table.add_value("# CG_Elast",max_cg_iteration/prm.num_time_steps);
         	convergence_table.add_value("# CG_Darcy",max_cg_iteration_darcy/prm.num_time_steps);
         }
+        if(mortar_flag == 2)
+		{
+			convergence_table.add_value("# Solves", n_mortar_dofs);
+		}
 
 //        convergence_table.add_value("Velocity,L2-L2", recv_buf_num[0]);
 //        convergence_table.add_value("Velocity,L2-Hdiv", recv_buf_num[1]);
@@ -4127,6 +4365,10 @@ namespace dd_biot
         	convergence_table.set_tex_caption("# CG_Elast", "\\# cg_Elast");
         	convergence_table.set_tex_caption("# CG_Darcy", "\\# cg_Darcy");
         }
+        if (mortar_flag == 2)
+		{
+			convergence_table.set_tex_caption("# Solves", "\\# Basis-Solves");
+		}
 
 //        convergence_table.set_tex_caption("Velocity,L2-L2", "$ \\|\\u - \\u_h\\|_{L^2(L^2)} $");
 //        convergence_table.set_tex_caption("Velocity,L2-Hdiv", "$ \\|\\nabla\\cdot(\\u - \\u_h)\\|_{L^2(L^2)} $");
@@ -4253,10 +4495,14 @@ namespace dd_biot
                 }
 
                 if (mortar_flag)
-                    GridGenerator::subdivided_hyper_rectangle(triangulation_mortar, reps[n_processes], p1, p2);
+                {
+                	GridGenerator::subdivided_hyper_rectangle(triangulation_mortar, reps[n_processes], p1, p2);
+                	triangulation_mortar.refine_global(4);
+                }
+
 //                triangulation.refine_global(2);
 //                triangulation.refine_global(3);
-                triangulation.refine_global(4);
+//                triangulation.refine_global(4);
                 pcout<<"number of active cells= "<<triangulation.n_active_cells()<<"\n";
             }
             else

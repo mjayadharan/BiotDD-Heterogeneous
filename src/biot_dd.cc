@@ -27,8 +27,8 @@ int main (int argc, char *argv[])
         // Mortar mesh parameters   (non-matching checkerboard)
         std::vector<std::vector<unsigned int>> mesh_m2d(5);
         mesh_m2d[0] = {2,2};
-        mesh_m2d[1] = {2,2};
-        mesh_m2d[2] = {2,2};
+        mesh_m2d[1] = {3,3};
+        mesh_m2d[2] = {3,3};
         mesh_m2d[3] = {2,2};
         mesh_m2d[4] = {1,1};
 
@@ -41,10 +41,10 @@ int main (int argc, char *argv[])
 		ds.pts.push_back(Point<2>(1,1));
         double c0=1;
         double alpha=1;
-        int num_cycle=1;
+        int num_cycle=5;
         int max_itr=3000;
         double tolerence = 1.e-6;
-        BiotParameters bparam (0.01,1,c0,alpha);
+        BiotParameters bparam (0.01,2,c0,alpha);
 //        MixedBiotProblemDD<2> drained_split(1,ds, bparam,0,0,1,1);
 //        MixedBiotProblemDD<2> fixed_stress(1,ds,bparam,0,0,2,1);
         MixedBiotProblemDD<2> monolithic(1,ds,bparam,0,0,0,1);
