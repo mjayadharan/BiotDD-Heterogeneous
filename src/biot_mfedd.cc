@@ -3203,13 +3203,13 @@ namespace dd_biot
 
 
 //
-              pcout << "\r  ..." << cg_iteration
-                    << " iterations completed, (residual = " << combined_error_iter
-                    << ")..." << std::flush;
+//              pcout << "\r  ..." << cg_iteration
+//                    << " iterations completed, (residual = " << combined_error_iter
+//                    << ")..." << std::flush;
               // Exit criterion
               if (combined_error_iter < tolerance)
                 {
-                  pcout << "\n  GMRES converges in " << cg_iteration << " iterations!\n and residual is"<<combined_error_iter/e_all_iter[0] <<"\n";
+                  pcout << "\n  GMRES converges in " << cg_iteration << " iterations!\n and residual is"<<combined_error_iter<<"\n";
                   Alambda_guess = Ap;
                   lambda_guess = lambda;
                   break;
@@ -3449,8 +3449,8 @@ namespace dd_biot
                  // Right now it is effectively solution_bar - A\lambda (0)
                    for (unsigned int i = 0; i < interface_dofs_darcy[side].size(); ++i)
                      r[side][i] = get_normal_direction(side) *
-                                    solution_bar_darcy[interface_dofs_darcy[side][i]-n_Elast] -
-                                  get_normal_direction(side) *  solution_star_darcy[interface_dofs_darcy[side][i]-n_Elast];
+                                    solution_bar_darcy[interface_dofs_darcy[side][i]-n_Elast]
+                                  -get_normal_direction(side) *  solution_star_darcy[interface_dofs_darcy[side][i]-n_Elast];
 
              	}
         	std::vector<double> r_receive_buffer(r[side].size(),0);
@@ -3630,6 +3630,14 @@ namespace dd_biot
           if (cg_iteration == 1){
             normB = alpha[0];
             normRold = alpha[0];
+            if(split_order_flag == 0)
+            {
+            	pcout<<"\n Elast CG initial residual is: "<<normB<<"\n";
+            }
+            else if(split_order_flag == 1)
+			{
+				pcout<<"\n Darcy CG initial residual is: "<<normB<<"\n";
+			}
           }
 
           normRold = alpha[0];
@@ -3651,7 +3659,7 @@ namespace dd_biot
 //                << " Elast iterations completed, (Elast residual = " << fabs(alpha[0])
 //                << ")..." << std::flush;
           // Exit criterion
-          if (fabs(alpha[0]) / normB < tolerance )
+          if (alpha[0] / normB < tolerance )
 //          if (sqrt(alpha[0]/normB<1.e-8) )
             {
               pcout << "\n  Elast CG converges in " << cg_iteration << " iterations! with residual= "<<fabs(alpha[0]) / normB<<"\n";
@@ -3665,8 +3673,8 @@ namespace dd_biot
 //                         << " Darcy iterations completed, (Darcy residual = " << fabs(alpha[0])
 //                         << ")..." << std::flush;
                    // Exit criterion
-                   if (fabs(alpha[0]) / normB < tolerance )
 //        	  if (sqrt(alpha[0]/normB<1.e-8) )
+                   if (alpha[0] / normB < tolerance )
                      {
                        pcout << "\n  Darcy CG converges in " << cg_iteration << " iterations! with residual= "<<fabs(alpha[0]) / normB<<"\n";
                        Alambda_guess_darcy = Ap;
@@ -4232,7 +4240,8 @@ namespace dd_biot
         double total_time = prm.time_step * prm.num_time_steps;
 
         /* From here disabling for longer runs:*/
-        if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-12) || (cycle == refine-1 && fabs(prm.time)<1.0e-12))
+//        if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-12) || (cycle == refine-1 && fabs(prm.time)<1.0e-12))
+		if (cycle == refine-1 )
         {
 
 
@@ -4497,11 +4506,11 @@ namespace dd_biot
                 if (mortar_flag)
                 {
                 	GridGenerator::subdivided_hyper_rectangle(triangulation_mortar, reps[n_processes], p1, p2);
-                	triangulation_mortar.refine_global(4);
+//                	triangulation_mortar.refine_global(4);
                 }
 
 //                triangulation.refine_global(2);
-//                triangulation.refine_global(3);
+                triangulation.refine_global(3);
 //                triangulation.refine_global(4);
                 pcout<<"number of active cells= "<<triangulation.n_active_cells()<<"\n";
             }
