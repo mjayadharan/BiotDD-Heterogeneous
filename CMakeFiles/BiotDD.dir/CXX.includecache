@@ -72,6 +72,10 @@ deal.II/base/work_stream.h
 projector.h
 /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/projector.h
 
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_dd.cc
+../inc/biot_mfedd.h
+/home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/inc/biot_mfedd.h
+
 /home/wickedboy_pc/git-repositories/BiotDD-Heterogeneous/src/biot_mfedd.cc
 deal.II/base/quadrature_lib.h
 -

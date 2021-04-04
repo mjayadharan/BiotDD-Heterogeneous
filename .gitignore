@@ -1,5 +1,6 @@
 .cproject
 *.vtu
+*.vtk
 *.pvtu
 CMakeCache.txt
 BiotDD

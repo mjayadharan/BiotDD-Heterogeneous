@@ -213,6 +213,7 @@ namespace dd_biot
         n_pressure= n_p;
         n_Elast= n_s+n_u+n_g;
 
+//        pcout<<"\n\nreached here 1\n\n";
 
         if(split_flag==0) //monolithic coupled scheme
         {
@@ -289,7 +290,7 @@ namespace dd_biot
                                                                     stress_bc_left,
                                                                     QGauss<dim-1>(degree+3),
                                                                     boundary_values_stress_left);
-
+//                pcout<<"\n\nreached here 2\n\n";
 
                 for (auto it=boundary_values_stress_left.begin(); it!=boundary_values_stress_left.end(); ++it){
 //                                  if (it->first >= n_s || it->first < n_s/2)
@@ -297,6 +298,7 @@ namespace dd_biot
 //                		if (it->first >= n_s && it->first<n_s+n_u+n_g+n_z)
                                       boundary_values_stress_left.erase(it->first);
                 }
+//                pcout<<"\n\nreached here 2---5\n\n";
 //                Vector<double> function_vector(10);
 //                Point<dim> sample_point;
 //                bc_stress_new.vector_value(sample_point, function_vector);
@@ -317,7 +319,7 @@ namespace dd_biot
                               }
                           }
 //                          boundary_output.close();
-
+//                          pcout<<"\n\nreached here 3\n\n";
 
                 //-------------------------------------------------------
                 //velocity boundary values---------------------
@@ -353,7 +355,7 @@ namespace dd_biot
                 //---------------------------------------------------end of velocity boundary values
             }
             constraints.close ();
-
+//            pcout<<"\n\nreached here 4\n\n";
 
 			BlockDynamicSparsityPattern dsp(5, 5);
 			dsp.block(0, 0).reinit (n_s, n_s);
@@ -439,8 +441,11 @@ namespace dd_biot
 			system_rhs_star.block(4).reinit (n_p);
 			system_rhs_star.collect_sizes ();
 			system_rhs_star = 0;
+
+//			pcout<<"\n\nreached here 5\n\n";
         }
 		//adding vectors required for storing mortar solutions.
+
 		if (mortar_flag)
 		        {
 		            std::vector<types::global_dof_index> dofs_per_component_mortar (dim*dim + dim + 0.5*dim*(dim-1) + dim + 1);
@@ -484,7 +489,7 @@ namespace dd_biot
 		            solution_star_mortar.block(4).reinit (n_p_mortar);
 		            solution_star_mortar.collect_sizes ();
 		        }
-
+//		pcout<<"\n\nreached here 3\n\n";
         { //Elasticity part
                 		{ //adding Neumann Boundary conditions.
                 		                constraints_elast.clear ();
@@ -620,7 +625,7 @@ namespace dd_biot
         				system_rhs_star_elast.collect_sizes();
         				system_rhs_star_elast = 0;
                 	} //end of Elasticity part
-
+//        pcout<<"\n\nreached here 4\n\n";
         if(split_flag!=0){
 
 //        	pcout<<"\n reached here"<<"\n";
@@ -705,7 +710,7 @@ namespace dd_biot
 
         }
 
-
+//        pcout<<"\n\nreached here 5\n\n";
         solution.reinit (5);
         solution.block(0).reinit (n_s);
         solution.block(1).reinit (n_u);
@@ -735,6 +740,7 @@ namespace dd_biot
 
         pcout << "N stress dofs: " << n_stress << std::endl;
         pcout << "N flux dofs: " << n_flux << std::endl;
+
     }
 
 
