@@ -3664,14 +3664,14 @@ namespace dd_biot
           if (cg_iteration == 1){
             normB = alpha[0];
             normRold = alpha[0];
-            if(split_order_flag == 0)
-            {
-            	pcout<<"\n Elast CG initial residual is: "<<normB<<"\n";
-            }
-            else if(split_order_flag == 1)
-			{
-				pcout<<"\n Darcy CG initial residual is: "<<normB<<"\n";
-			}
+//            if(split_order_flag == 0)
+//            {
+//            	pcout<<"\n Elast CG initial residual is: "<<sqrt(normB)<<"\n";
+//            }
+//            else if(split_order_flag == 1)
+//			{
+//				pcout<<"\n Darcy CG initial residual is: "<<sqrt(normB)<<"\n";
+//			}
           }
 
           normRold = alpha[0];
@@ -3689,9 +3689,9 @@ namespace dd_biot
                   beta_side[side] += r[side][i] * r[side][i];
               }
           if(split_order_flag==0){
-//          pcout << "\r  ..." << cg_iteration
-//                << " Elast iterations completed, (Elast residual = " << sqrt(alpha[0] / normB)
-//                << ")..." << std::flush;
+          pcout << "\r  ..." << cg_iteration
+                << " Elast iterations completed, (Elast residual = " << sqrt(alpha[0] / normB)
+                << ")..." << std::flush;
           // Exit criterion
           if (sqrt(alpha[0] / normB) < tolerance )
 //          if (sqrt(alpha[0]/normB<1.e-8) )
@@ -3703,9 +3703,9 @@ namespace dd_biot
             }
           }
           else if(split_order_flag==1){
-//                   pcout << "\r  ..." << cg_iteration
-//                         << " Darcy iterations completed, (Darcy residual = " << sqrt(alpha[0] / normB)
-//                         << ")..." << std::flush;
+                   pcout << "\r  ..." << cg_iteration
+                         << " Darcy iterations completed, (Darcy residual = " << sqrt(alpha[0] / normB)
+                         << ")..." << std::flush;
                    // Exit criterion
 //        	  if (sqrt(alpha[0]/normB<1.e-8) )
                    if (sqrt(alpha[0] / normB) < tolerance )
@@ -4544,7 +4544,7 @@ namespace dd_biot
                 }
 
 //                triangulation.refine_global(2);
-                triangulation.refine_global(3);
+//                triangulation.refine_global(3);
 //                triangulation.refine_global(4);
                 pcout<<"number of active cells= "<<triangulation.n_active_cells()<<"\n";
             }
