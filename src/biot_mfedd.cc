@@ -1533,30 +1533,58 @@ namespace dd_biot
           for (unsigned int face_no=0;
                face_no<GeometryInfo<dim>::faces_per_cell;
                ++face_no)
-              if (cell->at_boundary(face_no) && cell->face(face_no)->boundary_id() == 104) // pressure part of the boundary
+              if (cell->at_boundary(face_no))
               {
-                  fe_face_values.reinit (cell, face_no);
+				  if(cell->face(face_no)->boundary_id() == 104 || cell->face(face_no)->boundary_id() == 102)// pressure part of the boundary
+				  {
+					  fe_face_values.reinit (cell, face_no);
 
-                  displacement_boundary_values.vector_value_list (fe_face_values.get_quadrature_points(),
-                                                                  boundary_values_elast);
-                  pressure_boundary_values.value_list(fe_face_values.get_quadrature_points(), boundary_values_flow);
+//					  displacement_boundary_values.vector_value_list (fe_face_values.get_quadrature_points(),
+//																	  boundary_values_elast);
+					  pressure_boundary_values.value_list(fe_face_values.get_quadrature_points(), boundary_values_flow);
 
-                  for (unsigned int q=0; q<n_face_q_points; ++q)
-                      for (unsigned int i=0; i<dofs_per_cell; ++i)
-                      {
-                          local_rhs(i) += -(fe_face_values[velocity].value (i, q) *
-                                                     fe_face_values.normal_vector(q) *
-                                                     boundary_values_flow[q] *
-                                                     fe_face_values.JxW(q));
+					  for (unsigned int q=0; q<n_face_q_points; ++q)
+						  for (unsigned int i=0; i<dofs_per_cell; ++i)
+						  {
+							  local_rhs(i) += -(fe_face_values[velocity].value (i, q) *
+														 fe_face_values.normal_vector(q) *
+														 boundary_values_flow[q] *
+														 fe_face_values.JxW(q));
 
-                          for (unsigned int d_i=0; d_i<dim; ++d_i)
-                              sigma[d_i] = fe_face_values[stresses[d_i]].value (i, q);
+//							  for (unsigned int d_i=0; d_i<dim; ++d_i)
+//								  sigma[d_i] = fe_face_values[stresses[d_i]].value (i, q);
+//
+//							  sigma_n = sigma * fe_face_values.normal_vector(q);
+//							  for (unsigned int d_i=0; d_i<dim; ++d_i)
+//								  local_rhs(i) += ((sigma_n[d_i] *prm.time_step* boundary_values_elast[q][d_i])
+//															* fe_face_values.JxW(q));
+						  }
+				  }
+				  if(cell->face(face_no)->boundary_id() == 102) //displcamenet part of boundary
+				  {
+					  fe_face_values.reinit (cell, face_no);
 
-                          sigma_n = sigma * fe_face_values.normal_vector(q);
-                          for (unsigned int d_i=0; d_i<dim; ++d_i)
-                              local_rhs(i) += ((sigma_n[d_i] *prm.time_step* boundary_values_elast[q][d_i])
-                                                        * fe_face_values.JxW(q));
-                      }
+						displacement_boundary_values.vector_value_list (fe_face_values.get_quadrature_points(),
+																		boundary_values_elast);
+//						pressure_boundary_values.value_list(fe_face_values.get_quadrature_points(), boundary_values_flow);
+
+						for (unsigned int q=0; q<n_face_q_points; ++q)
+							for (unsigned int i=0; i<dofs_per_cell; ++i)
+							{
+//								local_rhs(i) += -(fe_face_values[velocity].value (i, q) *
+//														   fe_face_values.normal_vector(q) *
+//														   boundary_values_flow[q] *
+//														   fe_face_values.JxW(q));
+
+								for (unsigned int d_i=0; d_i<dim; ++d_i)
+									sigma[d_i] = fe_face_values[stresses[d_i]].value (i, q);
+
+								sigma_n = sigma * fe_face_values.normal_vector(q);
+								for (unsigned int d_i=0; d_i<dim; ++d_i)
+									local_rhs(i) += ((sigma_n[d_i] *prm.time_step* boundary_values_elast[q][d_i])
+															  * fe_face_values.JxW(q));
+							}
+				  }
               }
 
 //          local_rhs.print(std::cout);
@@ -1727,7 +1755,7 @@ namespace dd_biot
             for (unsigned int face_no=0;
                  face_no<GeometryInfo<dim>::faces_per_cell;
                  ++face_no)
-                if (cell->at_boundary(face_no) && cell->face(face_no)->boundary_id() ==104) // pressure part of the boundary
+                if (cell->at_boundary(face_no) && cell->face(face_no)->boundary_id() ==102) // displacement part of the boundary
                 {
                     fe_face_values.reinit (cell, face_no);
 

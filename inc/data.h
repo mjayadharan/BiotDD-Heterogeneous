@@ -419,16 +419,18 @@ namespace dd_biot
           switch (dim)
           {
               case 2:
-                  if (x < 1.e-10  )
-                  {
-                      values(0) = 0.0;
-                      values(1) = 0.0;
-                  }
-                  else if (x > 1 - 1.e-10  )
-                  {
-                      values(0) = 0.0;
-                      values(1) = 0.0;
-                  }
+            	  values(0) = 0;
+            	  values(1) = 0;
+//                  if (x < 1.e-10  )
+//                  {
+//                      values(0) = 0.0;
+//                      values(1) = 0.0;
+//                  }
+//                  else if (x > 1 - 1.e-10  )
+//                  {
+//                      values(0) = 0.0;
+//                      values(1) = 0.0;
+//                  }
 
                   break;
               case 3:
@@ -535,7 +537,7 @@ namespace dd_biot
       switch (dim)
       {
         case 2:
-        	return 1.0;
+        	return 1.0-p[0];
 //          return exp(t)*(cos(y*3.141592653589793)*sin(x*3.141592653589793)+1.0E1);
         default:
         Assert(false, ExcMessage("The BC data for dim != 2 is not provided"));
