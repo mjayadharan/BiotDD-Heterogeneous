@@ -3690,13 +3690,13 @@ namespace dd_biot
               }
           if(split_order_flag==0){
 //          pcout << "\r  ..." << cg_iteration
-//                << " Elast iterations completed, (Elast residual = " << fabs(alpha[0])
+//                << " Elast iterations completed, (Elast residual = " << sqrt(alpha[0] / normB)
 //                << ")..." << std::flush;
           // Exit criterion
-          if (alpha[0] / normB < tolerance )
+          if (sqrt(alpha[0] / normB) < tolerance )
 //          if (sqrt(alpha[0]/normB<1.e-8) )
             {
-              pcout << "\n  Elast CG converges in " << cg_iteration << " iterations! with residual= "<<fabs(alpha[0]) / normB<<"\n";
+              pcout << "\n  Elast CG converges in " << cg_iteration << " iterations! with residual= "<<sqrt(alpha[0] / normB)<<"\n";
               Alambda_guess_elast = Ap;
               lambda_guess_elast = lambda;
               break;
@@ -3704,13 +3704,13 @@ namespace dd_biot
           }
           else if(split_order_flag==1){
 //                   pcout << "\r  ..." << cg_iteration
-//                         << " Darcy iterations completed, (Darcy residual = " << fabs(alpha[0])
+//                         << " Darcy iterations completed, (Darcy residual = " << sqrt(alpha[0] / normB)
 //                         << ")..." << std::flush;
                    // Exit criterion
 //        	  if (sqrt(alpha[0]/normB<1.e-8) )
-                   if (alpha[0] / normB < tolerance )
+                   if (sqrt(alpha[0] / normB) < tolerance )
                      {
-                       pcout << "\n  Darcy CG converges in " << cg_iteration << " iterations! with residual= "<<fabs(alpha[0]) / normB<<"\n";
+                       pcout << "\n  Darcy CG converges in " << cg_iteration << " iterations! with residual= "<<sqrt(alpha[0] / normB)<<"\n";
                        Alambda_guess_darcy = Ap;
                        lambda_guess_darcy = lambda;
                        break;
