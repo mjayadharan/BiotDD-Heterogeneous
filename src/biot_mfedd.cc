@@ -1971,7 +1971,8 @@ namespace dd_biot
             for (unsigned int face_no=0;
                  face_no<GeometryInfo<dim>::faces_per_cell;
                  ++face_no)
-                if (cell->at_boundary(face_no) && cell->face(face_no)->boundary_id() == 104) // pressure part of the boundary
+                if (cell->at_boundary(face_no) )
+                if (cell->face(face_no)->boundary_id() == 104 || cell->face(face_no)->boundary_id() == 102)// pressure part of the boundary
                 {
                     fe_face_values.reinit (cell, face_no);
 
