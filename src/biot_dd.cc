@@ -27,10 +27,11 @@ int main (int argc, char *argv[])
         // Mortar mesh parameters   (non-matching checkerboard)
         std::vector<std::vector<unsigned int>> mesh_m2d(5);
         mesh_m2d[0] = {2,2};
-        mesh_m2d[1] = {2,2};
-        mesh_m2d[2] = {2,2};
+        mesh_m2d[1] = {3,3};
+        mesh_m2d[2] = {3,3};
         mesh_m2d[3] = {2,2};
         mesh_m2d[4] = {1,1};
+
 
         DataStruct<2> ds;
 		ds.name = "poros.txt";
@@ -41,17 +42,32 @@ int main (int argc, char *argv[])
 		ds.pts.push_back(Point<2>(1,1));
         double c0=1;
         double alpha=1;
-        int num_cycle=1;
+        int num_cycle=5;
         int max_itr=3000;
         double tolerence = 1.e-6;
-        BiotParameters bparam (0.01,100,c0,alpha);
-//        MixedBiotProblemDD<2> drained_split(1,ds, bparam,0,0,1);
-//        MixedBiotProblemDD<2> fixed_stress(1,ds,bparam,0,0,2);
-        MixedBiotProblemDD<2> monolithic(1,ds,bparam,0,0,0);
+
+        BiotParameters bparam (0.01,1,c0,alpha);
+//        MixedBiotProblemDD<2> drained_split(1,ds, bparam,0,0,1,1);
+        MixedBiotProblemDD<2> fixed_stress(1,ds,bparam,0,0,2,1);
+//        MixedBiotProblemDD<2> monolithic(1,ds,bparam,0,0,0,1);
+
 
 //        drained_split.run (num_cycle, mesh_m2d, tolerence, max_itr);
-//        fixed_stress.run(num_cycle, mesh_m2d, tolerence, max_itr);
-        monolithic.run (num_cycle, mesh_m2d, tolerence, max_itr);
+        fixed_stress.run(num_cycle, mesh_m2d, tolerence, max_itr);
+//        monolithic.run (num_cycle, mesh_m2d, tolerence, max_itr);
+//
+        //BiotDD with mortar
+//	   MixedBiotProblemDD<2> lin_mortar(1,ds,bparam,1,1,0,1);
+//        MixedBiotProblemDD<2> quad_mortar(1,ds,bparam,1,2,0,1);
+//        MixedBiotProblemDD<2> cubic_mortar(1,ds,bparam,1,3,0,1);
+
+//	   lin_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
+//        quad_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
+//        cubic_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
+
+	   //Biot Mortar with multi-scale basis construction
+//        MixedBiotProblemDD<2> lin_mortar_mscale(1,bparam,2,1,0,0);
+//        lin_mortar_mscale.run(num_cycle,mesh_m2d,tolerence,max_itr);
     }
     catch (std::exception &exc)
     {
