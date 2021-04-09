@@ -148,7 +148,7 @@ namespace dd_biot
     	back_solve(std::vector<std::vector<double>> H, std::vector<double> beta, std::vector<double> &y, unsigned int k_iteration);
 
         void
-        local_gmres(const unsigned int maxiter);
+		local_gmres(const unsigned int maxiter, const unsigned int solver_flag=0); //solver_order = 0(monolithic), 1(Elasticity), 2(Darcy)
         double vect_norm(std::vector<double> v);
         //just to test the local_gmres algorithm
           void
