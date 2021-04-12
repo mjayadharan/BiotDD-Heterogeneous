@@ -3346,9 +3346,9 @@ MixedBiotProblemDD<dim>::local_gmres(const unsigned int maxiter, const unsigned 
 
 
 
-			pcout << "\r  ..." << cg_iteration
-				  << " iterations completed, (residual = " << combined_error_iter
-				  << ")..." << std::flush;
+//			pcout << "\r  ..." << cg_iteration
+//				  << " iterations completed, (residual = " << combined_error_iter
+//				  << ")..." << std::flush;
 			// Exit criterion
 			if (combined_error_iter < tolerance)
 			  {
@@ -3818,9 +3818,9 @@ MixedBiotProblemDD<dim>::local_gmres(const unsigned int maxiter, const unsigned 
                   beta_side[side] += r[side][i] * r[side][i];
               }
           if(split_order_flag==0){
-          pcout << "\r  ..." << cg_iteration
-                << " Elast iterations completed, (Elast residual = " << sqrt(alpha[0] / normB)
-                << ")..." << std::flush;
+//          pcout << "\r  ..." << cg_iteration
+//                << " Elast iterations completed, (Elast residual = " << sqrt(alpha[0] / normB)
+//                << ")..." << std::flush;
           // Exit criterion
           if (sqrt(alpha[0] / normB) < tolerance )
 //          if (sqrt(alpha[0]/normB<1.e-8) )
@@ -3832,9 +3832,9 @@ MixedBiotProblemDD<dim>::local_gmres(const unsigned int maxiter, const unsigned 
             }
           }
           else if(split_order_flag==1){
-                   pcout << "\r  ..." << cg_iteration
-                         << " Darcy iterations completed, (Darcy residual = " << sqrt(alpha[0] / normB)
-                         << ")..." << std::flush;
+//                   pcout << "\r  ..." << cg_iteration
+//                         << " Darcy iterations completed, (Darcy residual = " << sqrt(alpha[0] / normB)
+//                         << ")..." << std::flush;
                    // Exit criterion
 //        	  if (sqrt(alpha[0]/normB<1.e-8) )
                    if (sqrt(alpha[0] / normB) < tolerance )
