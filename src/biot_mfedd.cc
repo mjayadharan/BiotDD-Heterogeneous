@@ -4403,8 +4403,8 @@ MixedBiotProblemDD<dim>::local_gmres(const unsigned int maxiter, const unsigned 
         double total_time = prm.time_step * prm.num_time_steps;
 
         /* From here disabling for longer runs:*/
-//        if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-12) || (cycle == refine-1 && fabs(prm.time)<1.0e-12))
-		if (cycle == refine-1 )
+        if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-12) || (cycle == refine-1 && fabs(prm.time)<1.0e-12))
+//		if (cycle == refine-1 )
         {
 
 
