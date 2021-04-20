@@ -4530,7 +4530,10 @@ namespace dd_biot
                 get_subdomain_coordinates(this_mpi, n_domains, subdomain_dimensions, p1, p2);
 
                 if (mortar_flag)
-                    GridGenerator::subdivided_hyper_rectangle(triangulation, reps[this_mpi], p1, p2);
+                {
+//                    GridGenerator::subdivided_hyper_rectangle(triangulation, reps[this_mpi], p1, p2);
+                	GridGenerator::subdivided_hyper_rectangle(triangulation, reps[0], p1, p2); //matching mortar case for BiotDD2, Example 2
+                }
                 else
                 {
                     GridGenerator::subdivided_hyper_rectangle(triangulation, reps[0], p1, p2);
@@ -4540,7 +4543,7 @@ namespace dd_biot
 
                 if (mortar_flag)
                 {
-                	GridGenerator::subdivided_hyper_rectangle(triangulation_mortar, reps[n_processes], p1, p2);
+                	GridGenerator::subdivided_hyper_rectangle(triangulation_mortar, reps[4], p1, p2);
 //                	triangulation_mortar.refine_global(4);
                 }
 
