@@ -97,6 +97,11 @@ namespace dd_biot
                        FE_Nothing<dim>(), 0.5*dim*(dim-1),
                        FE_BDM<dim>(mortar_degree), 1,
                        FE_Nothing<dim>(), 1),
+//		    fe_mortar (FE_RaviartThomas<dim>(mortar_degree), dim,
+//					   FE_Nothing<dim>(), dim,
+//					   FE_Nothing<dim>(), 0.5*dim*(dim-1),
+//					   FE_RaviartThomas<dim>(mortar_degree), 1,
+//					   FE_Nothing<dim>(), 1),
             dof_handler_mortar (triangulation_mortar),
 			lame_function(ds),
 			k_inverse(ds),
@@ -3238,13 +3243,13 @@ namespace dd_biot
 
 
 //
-//              pcout << "\r  ..." << cg_iteration
-//                    << " iterations completed, (residual = " << combined_error_iter
-//                    << ")..." << std::flush;
+              pcout << "\r  ..." << cg_iteration
+                    << " iterations completed, (relative residual = " << combined_error_iter
+                    << ")..." << std::flush;
               // Exit criterion
               if (combined_error_iter < tolerance)
                 {
-                  pcout << "\n  GMRES converges in " << cg_iteration << " iterations!\n and residual is"<<combined_error_iter<<"\n";
+                  pcout << "\n  GMRES converges in " << cg_iteration << " iterations!\n and relative residual is"<<combined_error_iter<<"\n";
                   Alambda_guess = Ap;
                   lambda_guess = lambda;
                   break;
@@ -3691,22 +3696,22 @@ namespace dd_biot
               }
           if(split_order_flag==0){
           pcout << "\r  ..." << cg_iteration
-                << " Elast iterations completed, (Elast residual = " << sqrt(alpha[0] / normB)
+                << " Elast iterations completed, (Elast relative residual = " << sqrt(alpha[0] / normB)
                 << ")..." << std::flush;
           // Exit criterion
           if (sqrt(alpha[0] / normB) < tolerance )
 //          if (sqrt(alpha[0]/normB<1.e-8) )
             {
-              pcout << "\n  Elast CG converges in " << cg_iteration << " iterations! with residual= "<<sqrt(alpha[0] / normB)<<"\n";
+              pcout << "\n  Elast CG converges in " << cg_iteration << " iterations! with relative residual= "<<sqrt(alpha[0] / normB)<<"\n";
               Alambda_guess_elast = Ap;
               lambda_guess_elast = lambda;
               break;
             }
           }
           else if(split_order_flag==1){
-                   pcout << "\r  ..." << cg_iteration
-                         << " Darcy iterations completed, (Darcy residual = " << sqrt(alpha[0] / normB)
-                         << ")..." << std::flush;
+//                   pcout << "\r  ..." << cg_iteration
+//                         << " Darcy iterations completed, (Darcy residual = " << sqrt(alpha[0] / normB)
+//                         << ")..." << std::flush;
                    // Exit criterion
 //        	  if (sqrt(alpha[0]/normB<1.e-8) )
                    if (sqrt(alpha[0] / normB) < tolerance )

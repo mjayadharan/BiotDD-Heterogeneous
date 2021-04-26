@@ -25,16 +25,23 @@ int main (int argc, char *argv[])
         Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
 
         // Mortar mesh parameters   (non-matching checkerboard)
-        std::vector<std::vector<unsigned int>> mesh_m2d(5);
         unsigned int h_size;
         unsigned int mortar_h_size;
         h_size = 2*2*2*2; //gives h= 1/128 with 64 subdomains
-        mortar_h_size = 1*2*2; //gives H = 1/16 with 64 subdomains
+        mortar_h_size = 2*2*2*2; //gives H = 1/16 with 64 subdomains
+
+        std::vector<unsigned int> x_y_refinement(2);
+        x_y_refinement = {h_size, h_size};
+//        std::vector<std::vector<unsigned int>> mesh_m2d(17, x_y_refinement);
+        std::vector<std::vector<unsigned int>> mesh_m2d(5);
+
         mesh_m2d[0] = {h_size, h_size};
         mesh_m2d[1] = {h_size, h_size};
         mesh_m2d[2] = {h_size, h_size};
         mesh_m2d[3] = {h_size, h_size};
-        mesh_m2d[4] = {mortar_h_size,mortar_h_size}; //mortar mesh
+        mesh_m2d[4] = {mortar_h_size, mortar_h_size};
+
+//        mesh_m2d[mesh_m2d.size() - 1] = {mortar_h_size, mortar_h_size}; //mortar mesh (last elemtn)
 
 
         DataStruct<2> ds;
@@ -47,9 +54,9 @@ int main (int argc, char *argv[])
         double c0=1;
         double alpha=1;
         int num_cycle=1;
-        int max_itr=3000;
+        int max_itr=2500;
         double tolerence = 1.e-6;
-        BiotParameters bparam (0.01,3,c0,alpha);
+        BiotParameters bparam (0.01,10,c0,alpha);
 //        MixedBiotProblemDD<2> drained_split(1,ds, bparam,0,0,1,1);
 //        MixedBiotProblemDD<2> fixed_stress(1,ds,bparam,0,0,2,1);
 //        MixedBiotProblemDD<2> monolithic(1,ds,bparam,0,0,0,1);

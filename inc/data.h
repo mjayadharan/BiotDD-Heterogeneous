@@ -208,11 +208,13 @@ namespace dd_biot
         {
           case 2:
             values[p][0][0] = 1.0/k_value;
+//        	  values[p][0][0] = 1.0;
 //        	  values[p][0][0] = 1.0/fabs(log(k_value));
             values[p][0][1] = 0.0;
             values[p][1][0] = 0.0;
 //            values[p][1][1] = 1.0/fabs(log(k_value));
             values[p][1][1] = 1.0/k_value;
+//            values[p][1][1] = 1.0;
             break;
           default:
           Assert(false, ExcMessage("The inverse of permeability tensor for dim != 2 is not provided"));
