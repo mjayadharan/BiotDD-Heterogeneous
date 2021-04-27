@@ -173,6 +173,19 @@ namespace dd_biot
         }
     }
 
+    //Computing Compute the lower left and upper right coordinates for special case of 3x5 subdomains (SPE case)
+    template<int dim>
+    void get_subdomain_coordinates_spe (const unsigned int &this_mpi, Point<dim> &p1, Point<dim> &p2)
+    {
+    	//Lower left coordinate
+    	p1[0] = (this_mpi%3)*20;
+    	p1[1] = (this_mpi/3)*44;
+    	//Upper right coordinate
+    	p2[0] = (this_mpi%3 +1)*20;
+		p2[1] = (this_mpi/3 +1)*44;
+
+    }
+
     // Find neighboring subdomains
     void
     find_neighbors (const int &dim, const unsigned int &this_mpi, const std::vector<unsigned int> &n_doms, std::vector<int> &neighbors)
@@ -309,7 +322,8 @@ namespace dd_biot
 
     template <int dim, typename Number>
     void
-    mark_interface_faces (const Triangulation<dim> &tria, const std::vector<int> &neighbors, const Point<dim> &p1, const Point<dim> &p2, std::vector<Number> &faces_per_interface)
+    mark_interface_faces (const Triangulation<dim> &tria, const std::vector<int> &neighbors, const Point<dim> &p1,
+    						const Point<dim> &p2, std::vector<Number> &faces_per_interface)
     {
         Assert(faces_per_interface.size() == neighbors.size(), ExcDimensionMismatch(faces_per_interface.size(), neighbors.size()));
 
@@ -321,18 +335,28 @@ namespace dd_biot
         typename Triangulation<dim>::cell_iterator cell, endc;
         cell = tria.begin_active (),
                 endc = tria.end();
-
+//        //files to debug
+//        	std::ofstream interface_file("interace_marks.txt", std::ofstream::app);
+//        	if (this_mpi == 0)
+//        		interface_file<<"corners points are: "<<p1[0]<<", "<<p1[1]<<" and "<<p2[0]<<", "<<p2[1]<<std::endl;
+//        //end of files to debug
         for (; cell!=endc; ++cell)
             for (unsigned int face_number=0;
                  face_number<GeometryInfo<dim>::faces_per_cell;
                  ++face_number)
             {
+//            	if(this_mpi == 0)
+//            		interface_file<<"cell centers is at: "<<cell->face(face_number)->center()(0)<<" , "<<cell->face(face_number)->center()(1)<<std::endl;
                 // If left boundary of the subdomain in 2d or
                 if ( std::fabs(cell->face(face_number)->center()(0) - p1[0]) < 1e-12 )
                 {
                     // If it is outside boundary (no neighbor) or interface
                     if (neighbors[3] < 0 )
+                    {
                         cell->face(face_number)->set_boundary_id (104);
+//                        if(this_mpi ==0)
+//                        interface_file<<"reached left boundary at: "<<cell->face(face_number)->center()(0)<<" , "<<cell->face(face_number)->center()(1)<<std::endl;
+                    }
                     else
                     {
                         cell->face(face_number)->set_boundary_id (4);

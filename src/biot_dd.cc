@@ -35,11 +35,11 @@ int main (int argc, char *argv[])
 //        std::vector<std::vector<unsigned int>> mesh_m2d(17, x_y_refinement);
         std::vector<std::vector<unsigned int>> mesh_m2d(5);
 
-        mesh_m2d[0] = {h_size, h_size};
+        mesh_m2d[0] = {20, 44};
         mesh_m2d[1] = {h_size, h_size};
         mesh_m2d[2] = {h_size, h_size};
         mesh_m2d[3] = {h_size, h_size};
-        mesh_m2d[4] = {mortar_h_size, mortar_h_size};
+        mesh_m2d[4] = {2, 2};
 
 //        mesh_m2d[mesh_m2d.size() - 1] = {mortar_h_size, mortar_h_size}; //mortar mesh (last elemtn)
 
@@ -50,13 +50,13 @@ int main (int argc, char *argv[])
 		ds.reps.push_back(60);
 		ds.reps.push_back(220);
 		ds.pts.push_back(Point<2>(0,0));
-		ds.pts.push_back(Point<2>(1,1));
+		ds.pts.push_back(Point<2>(60,220));
         double c0=1;
         double alpha=1;
         int num_cycle=1;
-        int max_itr=2500;
+        int max_itr=4000;
         double tolerence = 1.e-6;
-        BiotParameters bparam (0.01,5,c0,alpha);
+        BiotParameters bparam (0.01,100,c0,alpha);
 //        MixedBiotProblemDD<2> drained_split(1,ds, bparam,0,0,1,1);
 //        MixedBiotProblemDD<2> fixed_stress(1,ds,bparam,0,0,2,1);
 //        MixedBiotProblemDD<2> monolithic(1,ds,bparam,0,0,0,1);
@@ -66,12 +66,12 @@ int main (int argc, char *argv[])
 //        monolithic.run (num_cycle, mesh_m2d, tolerence, max_itr);
 
         //BiotDD with mortar
-	   MixedBiotProblemDD<2> lin_mortar(1,ds,bparam,1,1,0,1);
-//        MixedBiotProblemDD<2> quad_mortar(1,ds,bparam,1,2,0,1);
+//	   MixedBiotProblemDD<2> lin_mortar(1,ds,bparam,1,1,0,1);
+        MixedBiotProblemDD<2> quad_mortar(1,ds,bparam,1,2,0,1);
 //        MixedBiotProblemDD<2> cubic_mortar(1,ds,bparam,1,3,0,1);
 
-	   lin_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
-//        quad_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
+//	   lin_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
+        quad_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
 //        cubic_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
 
 	   //Biot Mortar with multi-scale basis construction

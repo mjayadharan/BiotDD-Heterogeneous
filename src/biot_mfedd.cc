@@ -1258,7 +1258,7 @@ namespace dd_biot
             for (unsigned int face_n=0;
                  face_n<GeometryInfo<dim>::faces_per_cell;
                  ++face_n)
-                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)
+                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100 && cell->face(face_n)->boundary_id() >0)
                 {
                     cell->face(face_n)->get_dof_indices (local_face_dof_indices, 0);
 
@@ -1298,7 +1298,6 @@ namespace dd_biot
     {
         TimerOutput::Scope t(computing_timer, "Get interface DoFs");
         interface_dofs_elast.resize(GeometryInfo<dim>::faces_per_cell, std::vector<types::global_dof_index> ());
-
         std::vector<types::global_dof_index> local_face_dof_indices;
 
         typename DoFHandler<dim>::active_cell_iterator cell, endc;
@@ -1321,10 +1320,9 @@ namespace dd_biot
             for (unsigned int face_n=0;
                  face_n<GeometryInfo<dim>::faces_per_cell;
                  ++face_n)
-                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)
+                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100 )
                 {
                     cell->face(face_n)->get_dof_indices (local_face_dof_indices, 0);
-
                     for (auto el : local_face_dof_indices)
                     {
                     	if(mortar_flag)
@@ -1335,7 +1333,14 @@ namespace dd_biot
 						else
 						{
 							 if (el < n_stress)
+							 {
+//								 pcout <<"\n\n\n reached here 5 \n\n\n";
+//								 pcout<<"\n\n\n face_cell_center is at boundary: "<<cell->at_boundary(face_n)<<"\n\n\n";
+//								 pcout<<"\n\n\n face_cell_center is : "<<cell->face(face_n)->center()(0)<<" , "<<cell->face(face_n)->center()(1)<<"\n\n\n";
+//								 pcout<<"\n\n\n boundary_id here is "<<cell->face(face_n)->boundary_id()+0<<"\n\n";
 								interface_dofs_elast[cell->face(face_n)->boundary_id()-1].push_back(el);
+//								std::cout <<"\n\n\n reached here 6 \n\n\n";
+							 }
 						}
                     }
                 }
@@ -1373,7 +1378,7 @@ namespace dd_biot
             for (unsigned int face_n=0;
                  face_n<GeometryInfo<dim>::faces_per_cell;
                  ++face_n)
-                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)
+                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)// && cell->face(face_n)->boundary_id() <100)
                 {
                     cell->face(face_n)->get_dof_indices (local_face_dof_indices, 0);
 
@@ -2060,7 +2065,7 @@ namespace dd_biot
             for (unsigned int face_n=0;
                  face_n<GeometryInfo<dim>::faces_per_cell;
                  ++face_n)
-                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)
+                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100) // && cell->face(face_n)->boundary_id() >0)
                 {
                     fe_face_values.reinit (cell, face_n);
 
@@ -2155,7 +2160,7 @@ namespace dd_biot
             for (unsigned int face_n=0;
                  face_n<GeometryInfo<dim>::faces_per_cell;
                  ++face_n)
-                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)
+                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)// && cell->face(face_n)->boundary_id() >0)
                 {
                     fe_face_values.reinit (cell, face_n);
 
@@ -2256,7 +2261,7 @@ namespace dd_biot
               for (unsigned int face_n=0;
                    face_n<GeometryInfo<dim>::faces_per_cell;
                    ++face_n)
-                  if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)
+                  if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)// && cell->face(face_n)->boundary_id() >0)
                   {
                       fe_face_values.reinit (cell, face_n);
 
@@ -2393,6 +2398,7 @@ namespace dd_biot
 		pcout << "\nStarting Initial Cond: Elast CG iterations, time t=" << prm.time << "s..." << "\n";
 		//solving Elasticity part
 		intermediate_solution.block(4) = old_solution.block(4);
+//		pcout<<"\n\nreached here 1\n\n";
 		assemble_rhs_bar_elast();
 //		pcout<<"\n\nreached here 2\n\n";
         local_cg(maxiter,0);
@@ -3353,7 +3359,7 @@ namespace dd_biot
 //    		TimerOutput::Scope t(computing_timer, "Local CG Darcy");
     	TimerOutput::Scope t(computing_timer, "Local CG ");
 
-
+//    	pcout<<"\n\nreached here 1\n\n";
       const unsigned int this_mpi =
         Utilities::MPI::this_mpi_process(mpi_communicator);
       const unsigned int n_processes =
@@ -3380,7 +3386,7 @@ namespace dd_biot
 
         	}
           }
-
+//      pcout<<"\n\nreached here 2\n\n";
       // Extra for projections from mortar to fine grid and RHS assembly
       Quadrature<dim - 1> quad;
       quad = QGauss<dim - 1>(qdegree);
@@ -3408,7 +3414,7 @@ namespace dd_biot
       else if (split_order_flag==1)
     	  solve_bar_darcy();
       interface_fe_function.reinit(solution);
-
+//      pcout<<"\n\nreached here 3\n\n";
       if (mortar_flag)
 	  {
 		  interface_fe_function_mortar.reinit(solution_bar_mortar);
@@ -3493,7 +3499,7 @@ namespace dd_biot
 
              	}
         	std::vector<double> r_receive_buffer(r[side].size(),0);
-
+//        	pcout<<"\n\nreached here 4\n\n";
         	  MPI_Send(&r[side][0],
         	           r[side].size(),
         				MPI_DOUBLE,
@@ -3867,7 +3873,7 @@ namespace dd_biot
             for (unsigned int face_n=0;
                  face_n<GeometryInfo<dim>::faces_per_cell;
                  ++face_n)
-                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)
+                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)// && cell->face(face_n)->boundary_id() >0)
                 {
                     fe_face_values.reinit (cell, face_n);
 
@@ -3921,7 +3927,7 @@ namespace dd_biot
             for (unsigned int face_n=0;
                  face_n<GeometryInfo<dim>::faces_per_cell;
                  ++face_n)
-                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100)
+                if (cell->at_boundary(face_n) && cell->face(face_n)->boundary_id() <100 && cell->face(face_n)->boundary_id() >0)
                 {
                     fe_face_values_mortar.reinit (cell, face_n);
 
@@ -4533,13 +4539,17 @@ namespace dd_biot
             {
                 // Partitioning into subdomains (simple bricks)
                 find_divisors<dim>(n_processes, n_domains);
+                //manually making the partition of subdomains 3x5
+                n_domains[0] = 3;
+                n_domains[1] = 5;
 
                 // Dimensions of the domain (unit hypercube)
                 std::vector<double> subdomain_dimensions(dim);
                 for (unsigned int d=0; d<dim; ++d)
                     subdomain_dimensions[d] = 1.0/double(n_domains[d]);
 
-                get_subdomain_coordinates(this_mpi, n_domains, subdomain_dimensions, p1, p2);
+//                get_subdomain_coordinates(this_mpi, n_domains, subdomain_dimensions, p1, p2);
+                get_subdomain_coordinates_spe<dim>(this_mpi, p1, p2);
 
                 if (mortar_flag)
                 {
@@ -4602,7 +4612,7 @@ namespace dd_biot
             pcout << "Projecting the initial conditions...\n";
             {
               InitialCondition<dim> ic;
-
+//              pcout <<"\n\n\n reached here 1 \n\n\n";
               ConstraintMatrix constraints_tmp(constraints);
               constraints_tmp.clear();
               constraints_tmp.close();
@@ -4613,6 +4623,7 @@ namespace dd_biot
 										QGauss<dim>(degree+5),
 										ic,
 										old_solution);
+//				  pcout <<"\n\n\n reached here 2 \n\n\n";
               }
               else if(split_flag!=0)
               {
@@ -4625,11 +4636,15 @@ namespace dd_biot
 /*
  *  Put the find_IC() function here. also put assemble_system_elast, get_interface_dofs_elast etc hre.
  */
+//              pcout <<"\n\n\n reached here 3 \n\n\n";
               if(ic_constr_flag) //enable for initial data construction
               {
             	  assemble_system_elast();
+//            	  pcout <<"\n\n\n reached here 4 \n\n\n";
             	  get_interface_dofs_elast();
+//            	  pcout <<"\n\n\n reached here 5 \n\n\n";
             	  Find_IC(maxiter);
+//            	  pcout <<"\n\n\n reached here 6 \n\n\n";
             	  solution.block(4) = old_solution.block(4);
             	  old_solution = solution;
 				  interface_fe_function_old = interface_fe_function;
@@ -4673,7 +4688,7 @@ namespace dd_biot
 									  &n_mortar_dofs,
 									  1,
 									  MPI_DOUBLE,
-									  MPI_SUM,
+									  MPI_MAX,
 									  mpi_communicator);
 						n_mortar_dofs = n_mortar_dofs/2; //taking care of overcounting at interface during allreduce.
             		}

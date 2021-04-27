@@ -542,7 +542,7 @@ namespace dd_biot
       switch (dim)
       {
         case 2:
-        	return 1.0-p[0];
+        	return 1.0-(p[0]/60.0);
 //          return exp(t)*(cos(y*3.141592653589793)*sin(x*3.141592653589793)+1.0E1);
         default:
         Assert(false, ExcMessage("The BC data for dim != 2 is not provided"));
@@ -775,7 +775,7 @@ namespace dd_biot
 //                values(9) = 1.0 - x; //corresponding to pressure boundary valurs
 //               }
               values(4) = 0.0; //corresponding to displacement_x
-              values(9) = 1.0 - x; //corresponding to pressure boundary valurs
+              values(9) = 1.0 - (x/60.0); //corresponding to pressure boundary valurs
               break;
           case 3:
               values = 0;
