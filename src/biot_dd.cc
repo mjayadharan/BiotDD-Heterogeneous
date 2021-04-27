@@ -27,8 +27,8 @@ int main (int argc, char *argv[])
         // Mortar mesh parameters   (non-matching checkerboard)
         unsigned int h_size;
         unsigned int mortar_h_size;
-        h_size = 2*2*2*2; //gives h= 1/128 with 64 subdomains
-        mortar_h_size = 2*2*2*2; //gives H = 1/16 with 64 subdomains
+        h_size = 2*2; //gives h= 1/128 with 64 subdomains
+        mortar_h_size = 2; //gives H = 1/16 with 64 subdomains
 
         std::vector<unsigned int> x_y_refinement(2);
         x_y_refinement = {h_size, h_size};
@@ -56,7 +56,7 @@ int main (int argc, char *argv[])
         int num_cycle=1;
         int max_itr=2500;
         double tolerence = 1.e-6;
-        BiotParameters bparam (0.01,10,c0,alpha);
+        BiotParameters bparam (0.01,5,c0,alpha);
 //        MixedBiotProblemDD<2> drained_split(1,ds, bparam,0,0,1,1);
 //        MixedBiotProblemDD<2> fixed_stress(1,ds,bparam,0,0,2,1);
 //        MixedBiotProblemDD<2> monolithic(1,ds,bparam,0,0,0,1);
@@ -75,7 +75,7 @@ int main (int argc, char *argv[])
 //        cubic_mortar.run(num_cycle,mesh_m2d,tolerence,max_itr);
 
 	   //Biot Mortar with multi-scale basis construction
-//        MixedBiotProblemDD<2> lin_mortar_mscale(1,bparam,2,1,0,0);
+//        MixedBiotProblemDD<2> lin_mortar_mscale(1,ds,bparam,2,1,0,1);
 //        lin_mortar_mscale.run(num_cycle,mesh_m2d,tolerence,max_itr);
     }
     catch (std::exception &exc)

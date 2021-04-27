@@ -2572,7 +2572,6 @@ namespace dd_biot
 		for (auto vec : interface_dofs)
 			for (auto el : vec)
 				n_interface_dofs += 1;
-		n_mortar_dofs = n_interface_dofs;
 		multiscale_basis.resize(n_interface_dofs);
 		BlockVector<double> tmp_basis (solution_bar_mortar);
 
@@ -3243,9 +3242,9 @@ namespace dd_biot
 
 
 //
-              pcout << "\r  ..." << cg_iteration
-                    << " iterations completed, (relative residual = " << combined_error_iter
-                    << ")..." << std::flush;
+//              pcout << "\r  ..." << cg_iteration
+//                    << " iterations completed, (relative residual = " << combined_error_iter
+//                    << ")..." << std::flush;
               // Exit criterion
               if (combined_error_iter < tolerance)
                 {
@@ -3695,9 +3694,9 @@ namespace dd_biot
                   beta_side[side] += r[side][i] * r[side][i];
               }
           if(split_order_flag==0){
-          pcout << "\r  ..." << cg_iteration
-                << " Elast iterations completed, (Elast relative residual = " << sqrt(alpha[0] / normB)
-                << ")..." << std::flush;
+//          pcout << "\r  ..." << cg_iteration
+//                << " Elast iterations completed, (Elast relative residual = " << sqrt(alpha[0] / normB)
+//                << ")..." << std::flush;
           // Exit criterion
           if (sqrt(alpha[0] / normB) < tolerance )
 //          if (sqrt(alpha[0]/normB<1.e-8) )
@@ -4240,15 +4239,19 @@ namespace dd_biot
 
         convergence_table.add_value("cycle", cycle);
         if(split_flag==0)
-        convergence_table.add_value("# GMRES", max_cg_iteration/prm.num_time_steps);
+        {
+        	convergence_table.add_value("# GMRES", max_cg_iteration/prm.num_time_steps);
+        	convergence_table.add_value("# Total_GMRES", max_cg_iteration);
+        	convergence_table.add_value("# MS_Solves", n_mortar_dofs);
+        }
         else if(split_flag!=0){
         	convergence_table.add_value("# CG_Elast",max_cg_iteration/prm.num_time_steps);
         	convergence_table.add_value("# CG_Darcy",max_cg_iteration_darcy/prm.num_time_steps);
         }
-        if(mortar_flag == 2)
-		{
-			convergence_table.add_value("# Solves", n_mortar_dofs);
-		}
+//        if(mortar_flag == 2)
+//		{
+//			convergence_table.add_value("# MS_Solves", n_mortar_dofs);
+//		}
 
 //        convergence_table.add_value("Velocity,L2-L2", recv_buf_num[0]);
 //        convergence_table.add_value("Velocity,L2-Hdiv", recv_buf_num[1]);
@@ -4280,8 +4283,8 @@ namespace dd_biot
         double total_time = prm.time_step * prm.num_time_steps;
 
         /* From here disabling for longer runs:*/
-//        if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-12) || (cycle == refine-1 && fabs(prm.time)<1.0e-12))
-		if (cycle == refine-1 )
+        if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-12) || (cycle == refine-1 && fabs(prm.time)<1.0e-12))
+//		if (cycle == refine-1 )
         {
 
 
@@ -4409,15 +4412,19 @@ namespace dd_biot
 
 //        convergence_table.set_tex_caption("# CG", "\\# cg");
         if(split_flag==0)
+        {
         	convergence_table.set_tex_caption("# GMRES", "\\# gmres");
+        	convergence_table.set_tex_caption("# Total_GMRES", "\\# total_gmres");
+        	convergence_table.set_tex_caption("# MS_Solves", "\\# Basis-Solves");
+        }
         else if (split_flag!=0){
         	convergence_table.set_tex_caption("# CG_Elast", "\\# cg_Elast");
         	convergence_table.set_tex_caption("# CG_Darcy", "\\# cg_Darcy");
         }
-        if (mortar_flag == 2)
-		{
-			convergence_table.set_tex_caption("# Solves", "\\# Basis-Solves");
-		}
+//        if (mortar_flag == 2)
+//		{
+//			convergence_table.set_tex_caption("# Solves", "\\# Basis-Solves");
+//		}
 
 //        convergence_table.set_tex_caption("Velocity,L2-L2", "$ \\|\\u - \\u_h\\|_{L^2(L^2)} $");
 //        convergence_table.set_tex_caption("Velocity,L2-Hdiv", "$ \\|\\nabla\\cdot(\\u - \\u_h)\\|_{L^2(L^2)} $");
@@ -4653,7 +4660,24 @@ namespace dd_biot
 
             if (Utilities::MPI::n_mpi_processes(mpi_communicator) != 1)
             	if(split_flag==0)
+            	{
             		get_interface_dofs();
+            		//Caluclating the number of MS basis solves
+            		if (mortar_flag)
+            		{
+						long n_interface_dofs = 0;
+						for (auto vec : interface_dofs)
+							for (auto el : vec)
+								n_interface_dofs += 1;
+						MPI_Allreduce(&n_interface_dofs,
+									  &n_mortar_dofs,
+									  1,
+									  MPI_DOUBLE,
+									  MPI_SUM,
+									  mpi_communicator);
+						n_mortar_dofs = n_mortar_dofs/2; //taking care of overcounting at interface during allreduce.
+            		}
+            	}
             	else if(split_flag!=0){
 //            		get_interface_dofs_elast();
             		get_interface_dofs_darcy();
