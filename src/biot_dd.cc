@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
         mesh_m2d[1] = {h_size, h_size};
         mesh_m2d[2] = {h_size, h_size};
         mesh_m2d[3] = {h_size, h_size};
-        mesh_m2d[4] = {2, 2};
+        mesh_m2d[4] = {1, 1};
 
 //        mesh_m2d[mesh_m2d.size() - 1] = {mortar_h_size, mortar_h_size}; //mortar mesh (last elemtn)
 

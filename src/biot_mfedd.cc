@@ -4289,7 +4289,7 @@ namespace dd_biot
         double total_time = prm.time_step * prm.num_time_steps;
 
         /* From here disabling for longer runs:*/
-        if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-12) || (cycle == refine-1 && fabs(prm.time)<1.0e-12))
+        if ((cycle == refine-1 && std::abs(prm.time-total_time)<1.0e-16) || (cycle == refine-1 && fabs(prm.time)<1.0e-16))
 //		if (cycle == refine-1 )
         {
 
@@ -4690,7 +4690,7 @@ namespace dd_biot
 									  MPI_DOUBLE,
 									  MPI_MAX,
 									  mpi_communicator);
-						n_mortar_dofs = n_mortar_dofs/2; //taking care of overcounting at interface during allreduce.
+//						n_mortar_dofs = n_mortar_dofs/2; //taking care of overcounting at interface during allreduce.
             		}
             	}
             	else if(split_flag!=0){
